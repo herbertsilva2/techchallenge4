@@ -1,0 +1,10 @@
+python-dotenv
+numpy
+opencv-python
+moviepy
+imageio-ffmpeg
+pytest
+mediapipe
+azure-cognitiveservices-speech
+ultralytics
+streamlit

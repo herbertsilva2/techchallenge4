@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Outputs and Media (Ignorados por Segurança/Tamanho)
+outputs/
+*.mp4
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.jpg
+*.jpeg
+*.png
+
+# Models
+models/
+*.pt
+*.tflite
+*.onnx
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs e Temporários
+*.log
+.DS_Store
+scratch/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
