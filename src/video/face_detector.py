@@ -10,7 +10,8 @@ from src.domain.video_models import FaceDetection
 class FaceDetector:
     def __init__(self, min_detection_confidence: float = 0.5):
         # Usando a Tasks API mais moderna do MediaPipe
-        model_path = Path("models/blaze_face_short_range.tflite")
+        project_root = Path(__file__).resolve().parent.parent.parent
+        model_path = project_root / "models" / "blaze_face_short_range.tflite"
         if not model_path.exists():
             raise FileNotFoundError(f"Modelo não encontrado em: {model_path}")
             

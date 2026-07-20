@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # Environments
-.env
+# .env (comentado temporariamente)
 .venv
 env/
 venv/
@@ -24,9 +24,9 @@ outputs/
 *.png
 
 # Models
-models/
-*.pt
-*.tflite
+# models/ (comentado temporariamente)
+# *.pt
+# *.tflite
 *.onnx
 
 # Testing
