@@ -6,3 +6,5 @@ test: images/test
 # Classes
 names:
   0: hand_on_face
+  1: razor_blade
+  2: box_cutter

@@ -3,6 +3,13 @@ import os
 from pathlib import Path
 from typing import List, Dict, Set
 
+VALID_CLASS_IDS = {0, 1, 2}
+CLASS_NAMES = {
+    0: "hand_on_face",
+    1: "razor_blade",
+    2: "box_cutter",
+}
+
 def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
     print("=== YOLO Dataset Validation ===")
     root_path = Path(dataset_dir)
@@ -91,8 +98,9 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
                         w = float(parts[3])
                         h = float(parts[4])
                         
-                        if cls_id != 0:
-                            print(f"ERROR: Invalid class_id {cls_id} in {lbl_path.name} (Expected 0)")
+                        if cls_id not in VALID_CLASS_IDS:
+                            valid_ids = ", ".join(str(i) for i in sorted(VALID_CLASS_IDS))
+                            print(f"ERROR: Invalid class_id {cls_id} in {lbl_path.name} (Expected one of: {valid_ids})")
                             has_critical_error = True
                             
                         for val in [x, y, w, h]:
