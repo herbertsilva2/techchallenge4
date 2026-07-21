@@ -24,10 +24,12 @@ def get_dashboard_service():
 dashboard_service = get_dashboard_service()
 
 # Estado da Sessão
-if 'uploaded_video_bytes' not in st.session_state:
-    st.session_state.uploaded_video_bytes = None
-if 'uploaded_video_extension' not in st.session_state:
-    st.session_state.uploaded_video_extension = None
+if 'uploaded_media_bytes' not in st.session_state:
+    st.session_state.uploaded_media_bytes = None
+if 'uploaded_media_extension' not in st.session_state:
+    st.session_state.uploaded_media_extension = None
+if 'uploaded_media_is_audio' not in st.session_state:
+    st.session_state.uploaded_media_is_audio = False
 if 'processing_completed' not in st.session_state:
     st.session_state.processing_completed = False
 if 'pipeline_result' not in st.session_state:
@@ -47,7 +49,7 @@ st.subheader("Tech Challenge Fase 4")
 st.warning("ATENÇÃO: Este sistema é um protótipo educacional para demonstração de IA multimodal. Não possui validade clínica.")
 
 # Área de Upload
-uploaded_file = st.file_uploader("Selecione o vídeo para análise", type=['mp4', 'avi', 'mov', 'mkv'])
+uploaded_file = st.file_uploader("Selecione vídeo ou áudio para análise", type=['mp4', 'avi', 'mov', 'mkv', 'wav', 'mp3', 'm4a', 'ogg'])
 
 if uploaded_file is not None:
     # Validate Upload
@@ -56,10 +58,11 @@ if uploaded_file is not None:
         st.error(error_msg)
     else:
         # Se for um novo arquivo, reseta o estado
-        if st.session_state.uploaded_video_bytes != uploaded_file.getvalue():
-            st.session_state.uploaded_video_bytes = uploaded_file.getvalue()
+        if st.session_state.uploaded_media_bytes != uploaded_file.getvalue():
+            st.session_state.uploaded_media_bytes = uploaded_file.getvalue()
             import pathlib
-            st.session_state.uploaded_video_extension = pathlib.Path(uploaded_file.name).suffix
+            st.session_state.uploaded_media_extension = pathlib.Path(uploaded_file.name).suffix
+            st.session_state.uploaded_media_is_audio = st.session_state.uploaded_media_extension.lower() in {'.wav', '.mp3', '.m4a', '.ogg'}
             st.session_state.processing_completed = False
             st.session_state.pipeline_result = None
             st.session_state.report_data = None
@@ -67,11 +70,14 @@ if uploaded_file is not None:
             st.session_state.processing_error = None
             st.session_state.execution_id = str(uuid.uuid4())
 
-        # Exibir o vídeo carregado
-        render_video_player(st.session_state.uploaded_video_bytes, st.session_state.uploaded_video_extension)
+        if st.session_state.uploaded_media_is_audio:
+            st.audio(st.session_state.uploaded_media_bytes)
+        else:
+            render_video_player(st.session_state.uploaded_media_bytes, st.session_state.uploaded_media_extension)
 
         if not st.session_state.processing_completed and not st.session_state.processing_error:
-            if st.button("Processar Vídeo"):
+            action_label = "Processar Áudio" if st.session_state.uploaded_media_is_audio else "Processar Vídeo"
+            if st.button(action_label):
                 progress_bar = st.progress(0.0)
                 status_text = st.empty()
 
@@ -81,8 +87,8 @@ if uploaded_file is not None:
 
                 try:
                     result = dashboard_service.process_upload(
-                        st.session_state.uploaded_video_bytes,
-                        st.session_state.uploaded_video_extension,
+                        st.session_state.uploaded_media_bytes,
+                        st.session_state.uploaded_media_extension,
                         progress_callback
                     )
                     

@@ -1,6 +1,6 @@
 import pytest
 from src.domain.video_models import VideoInfo, FaceDetection, FrameInfo, FrameAnalysis, VideoAnalysis
-from src.domain.audio_models import AudioInfo, SpeechSegment, AudioAnalysis
+from src.domain.audio_models import AudioInfo, SpeechSegment, AudioAnalysis, VocalMetrics
 from src.domain.text_models import SentenceAnalysis, Transcript, TextAnalysis
 from src.domain.fusion_models import Evidence, RiskLevel, FusionResult
 from src.domain.processing_models import ProcessingStep, ExecutionTime, PipelineResult
@@ -55,11 +55,12 @@ def test_video_analysis_serialization():
 def test_audio_models_serialization():
     a_info = AudioInfo(sample_rate=16000, channels=1, duration_seconds=5.0)
     seg = SpeechSegment(start_time=0.0, end_time=2.0, text="Olá")
-    a_analysis = AudioAnalysis(audio_info=a_info, segments=[seg])
+    a_analysis = AudioAnalysis(audio_info=a_info, segments=[seg], vocal_metrics=VocalMetrics(pause_count=2), quality={'status': 'completed'})
     
     data = a_analysis.to_dict()
     assert data['audio_info']['sample_rate'] == 16000
     assert len(data['segments']) == 1
+    assert data['vocal_metrics']['pause_count'] == 2
     
     a_analysis2 = AudioAnalysis.from_dict(data)
     assert a_analysis == a_analysis2

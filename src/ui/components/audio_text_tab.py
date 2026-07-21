@@ -34,6 +34,25 @@ def render_audio_text_tab(report_data: Dict[str, Any]):
             if report_data.get('language'):
                 st.caption(f"Idioma: {report_data.get('language')}")
             st.write(report_data.get('transcript'))
+        vocal = report_data.get('audio_analysis') or {}
+        if vocal:
+            st.markdown("---")
+            st.subheader("Indicadores vocais")
+            st.warning("Indicadores acústicos não permitem inferir ou diagnosticar ansiedade, trauma, fadiga vocal ou qualquer condição de saúde.")
+            quality = vocal.get('quality', {})
+            if quality.get('reason'):
+                st.info(quality['reason'])
+            metrics = vocal.get('vocal_metrics')
+            if metrics:
+                labels = {
+                    'speech_duration_seconds': 'Duração de fala (s)', 'pause_count': 'Pausas prolongadas',
+                    'total_pause_seconds': 'Tempo em pausas (s)', 'average_pause_seconds': 'Pausa média (s)',
+                    'longest_pause_seconds': 'Maior pausa (s)', 'words_per_minute': 'Palavras por minuto',
+                    'filler_count': 'Hesitações textuais', 'pitch_mean_hz': 'Tom médio (Hz)',
+                    'pitch_std_hz': 'Variação de tom (Hz)', 'intensity_mean_db': 'Intensidade média (dB)',
+                    'intensity_std_db': 'Variação de intensidade (dB)'
+                }
+                st.json({labels.get(key, key): value for key, value in metrics.items() if value is not None})
             
     with col2:
         st.subheader("Texto (Sentimentos)")

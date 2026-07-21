@@ -2,6 +2,7 @@ from dataclasses import dataclass, asdict, field
 from typing import Dict, Any, Optional
 from src.domain.video_models import VideoInfo
 from src.domain.fusion_models import FusionResult
+from src.domain.audio_models import AudioAnalysis
 
 @dataclass
 class ModalityStatus:
@@ -28,6 +29,7 @@ class ReportData:
     speech_provider: Optional[str] = None
     language: Optional[str] = None
     speech_status: Optional[str] = None
+    audio_analysis: Optional[AudioAnalysis] = None
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
@@ -45,4 +47,6 @@ class ReportData:
             result['language'] = self.language
         if self.speech_status is not None:
             result['speech_status'] = self.speech_status
+        if self.audio_analysis is not None:
+            result['audio_analysis'] = self.audio_analysis.to_dict()
         return result

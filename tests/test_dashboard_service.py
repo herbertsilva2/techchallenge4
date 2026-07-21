@@ -18,6 +18,11 @@ def test_validate_upload_invalid_extension(dashboard_service):
     assert is_valid is False
     assert "Extensão não permitida" in err
 
+def test_validate_upload_allows_audio_extension(dashboard_service):
+    is_valid, err = dashboard_service.validate_upload("audio.mp3", 1000)
+    assert is_valid is True
+    assert err is None
+
 def test_validate_upload_size_limit(dashboard_service):
     is_valid, err = dashboard_service.validate_upload("video.mp4", MAX_UPLOAD_SIZE_BYTES + 1)
     assert is_valid is False

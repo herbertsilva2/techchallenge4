@@ -9,7 +9,9 @@ from src.services.result_loader import ResultLoader
 from src.domain.processing_models import PipelineResult, ProcessingStep
 
 MAX_UPLOAD_SIZE_BYTES = 200 * 1024 * 1024  # 200 MB
-ALLOWED_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
+ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
+ALLOWED_AUDIO_EXTENSIONS = {'.wav', '.mp3', '.m4a', '.ogg'}
+ALLOWED_EXTENSIONS = ALLOWED_VIDEO_EXTENSIONS | ALLOWED_AUDIO_EXTENSIONS
 
 class DashboardService:
     def __init__(self):
@@ -38,7 +40,11 @@ class DashboardService:
                 f.write(uploaded_bytes)
                 
             # Execute pipeline
-            result = self.pipeline_service.execute(temp_video_path, progress_callback=callback)
+            result = self.pipeline_service.execute(
+                temp_video_path,
+                progress_callback=callback,
+                input_is_audio=extension.lower() in ALLOWED_AUDIO_EXTENSIONS
+            )
             
             # Note: the pipeline writes outputs to OUTPUTS_DIR, not temp_dir, 
             # so the report JSON and MD files are persistent.

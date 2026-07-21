@@ -8,3 +8,5 @@ mediapipe
 azure-cognitiveservices-speech
 ultralytics
 streamlit
+librosa
+soundfile

@@ -6,6 +6,7 @@ from datetime import datetime
 from src.utils.config import AZURE_SPEECH_KEY, AZURE_SPEECH_REGION, AZURE_SPEECH_LANGUAGE, AZURE_SPEECH_ENDPOINT, OUTPUTS_DIR
 from src.domain.processing_models import PipelineResult, ProcessingStep, ExecutionTime
 from src.domain.text_models import Transcript, TextAnalysis
+from src.domain.audio_models import SpeechSegment
 from src.domain.video_models import VideoInfo
 from src.domain.report_models import ReportData, ModalityStatus
 
@@ -17,6 +18,8 @@ from src.video.frame_analyzer import FrameAnalyzer
 from src.video.yolo_detector import YOLODetector
 from src.audio.azure_speech_transcriber import AzureSpeechTranscriber
 from src.audio.transcription_service import TranscriptionService
+from src.audio.audio_normalizer import AudioNormalizer
+from src.audio.vocal_analysis_service import VocalAnalysisService
 from src.text.text_analysis_service import TextAnalysisService
 from src.fusion.fusion_engine import FusionEngine
 from src.fusion.fusion_service import FusionService
@@ -36,7 +39,7 @@ class PipelineService:
             except Exception as e:
                 result.messages.append(f"Callback error: {str(e)}")
 
-    def execute(self, video_path: Path, progress_callback: Optional[ProgressCallback] = None, output_dir: Optional[Path] = None) -> PipelineResult:
+    def execute(self, video_path: Path, progress_callback: Optional[ProgressCallback] = None, output_dir: Optional[Path] = None, input_is_audio: bool = False) -> PipelineResult:
         result = PipelineResult(messages=[], errors=[], execution_times=[])
         out_dir = output_dir or OUTPUTS_DIR
 
@@ -61,34 +64,34 @@ class PipelineService:
         }
 
         try:
-            # 1. Validation & Metadata
-            step = ProcessingStep.VIDEO_EXTRACTION
-            result.current_step = step
-            self._safe_callback(progress_callback, step, 0.0, "Validando vídeo e extraindo metadados...", result)
-            start_time = time.time()
-            
-            loader = VideoLoader(str(video_path))
-            valid_path = loader.validate()
-            metadata = VideoMetadata.get_metadata(str(valid_path))
-            result.video_info = VideoInfo(
-                width=metadata.width, height=metadata.height, fps=metadata.fps,
-                frame_count=metadata.frame_count, duration_seconds=metadata.duration_seconds, codec=metadata.codec
-            )
-            
-            # 2. Extract frames
-            self._safe_callback(progress_callback, step, 0.3, "Extraindo frames...", result)
-            frame_ext = FrameExtractor(str(valid_path), str(out_dir))
-            frames_extracted = frame_ext.extract_frames(interval=30)
-            
-            # 3. Extract audio
-            step = ProcessingStep.AUDIO_EXTRACTION
-            result.current_step = step
-            self._safe_callback(progress_callback, step, 0.5, "Extraindo áudio...", result)
-            audio_ext = AudioExtractor(str(valid_path), str(out_dir))
-            audio_path = audio_ext.extract_audio()
-
-            result.execution_times.append(ExecutionTime(step=ProcessingStep.VIDEO_EXTRACTION, duration_seconds=time.time() - start_time))
-            result.execution_times.append(ExecutionTime(step=ProcessingStep.AUDIO_EXTRACTION, duration_seconds=time.time() - start_time))
+            yolo_info = {}
+            if input_is_audio:
+                modalities['video'] = ModalityStatus('not_executed', reason='Entrada de áudio sem conteúdo visual.')
+                modalities['yolo'] = ModalityStatus('not_executed', reason='Entrada de áudio sem conteúdo visual.')
+                step = ProcessingStep.AUDIO_EXTRACTION
+                result.current_step = step
+                self._safe_callback(progress_callback, step, 0.2, "Normalizando áudio...", result)
+                start_time = time.time()
+                audio_path = str(AudioNormalizer().normalize(video_path, out_dir / 'audio'))
+                result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
+            else:
+                # Validation, metadata, frame and audio extraction for video inputs.
+                step = ProcessingStep.VIDEO_EXTRACTION
+                result.current_step = step
+                self._safe_callback(progress_callback, step, 0.0, "Validando vídeo e extraindo metadados...", result)
+                start_time = time.time()
+                loader = VideoLoader(str(video_path))
+                valid_path = loader.validate()
+                metadata = VideoMetadata.get_metadata(str(valid_path))
+                result.video_info = VideoInfo(width=metadata.width, height=metadata.height, fps=metadata.fps, frame_count=metadata.frame_count, duration_seconds=metadata.duration_seconds, codec=metadata.codec)
+                self._safe_callback(progress_callback, step, 0.3, "Extraindo frames...", result)
+                FrameExtractor(str(valid_path), str(out_dir)).extract_frames(interval=30)
+                step = ProcessingStep.AUDIO_EXTRACTION
+                result.current_step = step
+                self._safe_callback(progress_callback, step, 0.5, "Extraindo áudio...", result)
+                audio_path = AudioExtractor(str(valid_path), str(out_dir)).extract_audio()
+                result.execution_times.append(ExecutionTime(step=ProcessingStep.VIDEO_EXTRACTION, duration_seconds=time.time() - start_time))
+                result.execution_times.append(ExecutionTime(step=ProcessingStep.AUDIO_EXTRACTION, duration_seconds=time.time() - start_time))
 
             modalities['audio'] = ModalityStatus(
                 'completed' if audio_path else 'unavailable',
@@ -96,44 +99,22 @@ class PipelineService:
                 details={'path': audio_path} if audio_path else {}
             )
 
-            # 4. Analyze frames
-            step = ProcessingStep.VIDEO_ANALYSIS
-            result.current_step = step
-            start_time = time.time()
-            self._safe_callback(progress_callback, step, 0.6, "Analisando frames (MediaPipe + YOLO)...", result)
-            
-            yolo_detector = YOLODetector()
-            yolo_info = yolo_detector.get_info()
-            
-            visual_detector_ready = yolo_info.get('custom_model_trained') or yolo_info.get('specialized_gesture_detector')
-            modalities['yolo'] = ModalityStatus(
-                'completed' if visual_detector_ready else 'partial',
-                reason=None if yolo_info.get('custom_model_trained') else 'Detector pré-treinado MediaPipe usado',
-                details=yolo_info
-            )
-
-            analyzer = FrameAnalyzer(str(out_dir), str(out_dir), yolo_detector=yolo_detector)
-            video_analysis = analyzer.analyze_frames()
-
-            if video_analysis:
-                result.video_analysis = video_analysis
-                # Face missing shouldn't fail
-                if video_analysis.faces_detected == 0:
-                    modalities['video'] = ModalityStatus('partial', reason='Nenhum rosto detectado.', details={
-                        'frames_analyzed': video_analysis.frames_analyzed,
-                        'faces_detected': video_analysis.faces_detected,
-                        'objects_detected': video_analysis.objects_detected
-                    })
+            if not input_is_audio:
+                step = ProcessingStep.VIDEO_ANALYSIS
+                result.current_step = step
+                start_time = time.time()
+                self._safe_callback(progress_callback, step, 0.6, "Analisando frames (MediaPipe + YOLO)...", result)
+                yolo_detector = YOLODetector()
+                yolo_info = yolo_detector.get_info()
+                visual_detector_ready = yolo_info.get('custom_model_trained') or yolo_info.get('specialized_gesture_detector')
+                modalities['yolo'] = ModalityStatus('completed' if visual_detector_ready else 'partial', reason=None if yolo_info.get('custom_model_trained') else 'Detector pré-treinado MediaPipe usado', details=yolo_info)
+                video_analysis = FrameAnalyzer(str(out_dir), str(out_dir), yolo_detector=yolo_detector).analyze_frames()
+                if video_analysis:
+                    result.video_analysis = video_analysis
+                    modalities['video'] = ModalityStatus('partial' if video_analysis.faces_detected == 0 else 'completed', reason='Nenhum rosto detectado.' if video_analysis.faces_detected == 0 else None, details={'frames_analyzed': video_analysis.frames_analyzed, 'faces_detected': video_analysis.faces_detected, 'objects_detected': video_analysis.objects_detected})
                 else:
-                    modalities['video'] = ModalityStatus('completed', details={
-                        'frames_analyzed': video_analysis.frames_analyzed,
-                        'faces_detected': video_analysis.faces_detected,
-                        'objects_detected': video_analysis.objects_detected
-                    })
-            else:
-                modalities['video'] = ModalityStatus('partial', reason='Erro na análise de frames.')
-
-            result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
+                    modalities['video'] = ModalityStatus('partial', reason='Erro na análise de frames.')
+                result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
 
             # 5. Transcription
             step = ProcessingStep.AUDIO_ANALYSIS
@@ -176,6 +157,17 @@ class PipelineService:
 
             result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
 
+            # Acoustic analysis works with or without Azure transcription.
+            if audio_path:
+                self._safe_callback(progress_callback, step, 0.78, "Calculando indicadores vocais...", result)
+                try:
+                    transcript_text = transcription_result.get('texto_completo') if transcription_result else None
+                    speech_segments = [SpeechSegment.from_dict(item) for item in transcription_result.get('segmentos', [])] if transcription_result else []
+                    result.audio_analysis = VocalAnalysisService().analyze(audio_path, transcript_text, speech_segments)
+                    modalities['audio'] = ModalityStatus('completed' if result.audio_analysis.quality.get('status') == 'completed' else 'partial', reason=result.audio_analysis.quality.get('reason'), details={'path': audio_path, 'quality': result.audio_analysis.quality})
+                except Exception as e:
+                    modalities['audio'] = ModalityStatus('partial', reason=f'Falha na análise vocal: {e}')
+
             # 6. Text Analysis
             step = ProcessingStep.TEXT_ANALYSIS
             result.current_step = step
@@ -215,10 +207,9 @@ class PipelineService:
             fusion_engine = FusionEngine()
             fusion_service = FusionService(str(fusion_output_dir), fusion_engine)
             
-            audio_analysis = None
             fusion_result_obj = fusion_service.execute(
                 video=result.video_analysis,
-                audio=audio_analysis,
+                audio=result.audio_analysis,
                 text=text_analysis_result
             )
             result.fusion_result = fusion_result_obj
@@ -239,7 +230,8 @@ class PipelineService:
                 transcript=result.transcript.full_text if getattr(result, 'transcript', None) else None,
                 speech_provider="Azure AI Speech" if transcription_result else None,
                 language=transcription_result.get('idioma', 'pt-BR') if transcription_result else None,
-                speech_status=modalities['transcription'].status
+                speech_status=modalities['transcription'].status,
+                audio_analysis=result.audio_analysis
             )
 
             report_gen = ReportGenerator(str(report_output_dir))
@@ -250,7 +242,7 @@ class PipelineService:
             result.report_md_path = md_path
 
             self._safe_callback(progress_callback, step, 1.0, "Processamento concluído", result)
-            yolo_demo_mode = not yolo_info.get('custom_model_trained') and not yolo_info.get('specialized_gesture_detector')
+            yolo_demo_mode = not input_is_audio and not yolo_info.get('custom_model_trained') and not yolo_info.get('specialized_gesture_detector')
             azure_partial = modalities.get('transcription') and modalities['transcription'].status == 'partial'
 
             if azure_partial or yolo_demo_mode:

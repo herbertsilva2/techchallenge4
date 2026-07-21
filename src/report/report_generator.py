@@ -62,6 +62,20 @@ class ReportGenerator:
             lines.append(f"**Status:** {data.speech_status or 'N/A'}\n")
             lines.append(f"{data.transcript}\n")
 
+        if data.audio_analysis:
+            lines.append("## Indicadores Vocais (não diagnósticos)")
+            lines.append("> Estes indicadores acústicos não permitem inferir ou diagnosticar ansiedade, trauma, fadiga vocal ou qualquer condição de saúde.\n")
+            quality = data.audio_analysis.quality or {}
+            lines.append(f"- **Qualidade:** {quality.get('status', 'N/A')}")
+            if quality.get('reason'):
+                lines.append(f"- **Observação:** {quality['reason']}")
+            metrics = data.audio_analysis.vocal_metrics
+            if metrics:
+                for label, value in metrics.to_dict().items():
+                    if value is not None:
+                        lines.append(f"- **{label}:** {value}")
+            lines.append("")
+
         if data.fusion_result:
             lines.append("## Resultado da Fusão")
             lines.append(f"- **Nível de Risco:** {data.fusion_result.risk_level.value}")
