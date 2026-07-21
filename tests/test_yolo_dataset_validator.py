@@ -32,13 +32,13 @@ def test_valid_dataset(temp_dataset):
     
     assert validate_dataset(str(temp_dataset)) is True
 
-def test_image_without_label(temp_dataset):
-    # Image exists, but label does not
+def test_image_without_label_is_a_valid_negative_example(temp_dataset):
+    # Uma imagem sem objeto da classe pode não ter arquivo de label no YOLO.
     img_path = temp_dataset / "images" / "train" / "img_no_lbl.jpg"
     with open(img_path, 'wb') as f:
         f.write(b'\x00' * 10)
         
-    assert validate_dataset(str(temp_dataset)) is False
+    assert validate_dataset(str(temp_dataset)) is True
 
 def test_label_without_image(temp_dataset):
     # Label exists, but image does not
@@ -58,10 +58,10 @@ def test_coordinate_out_of_range(temp_dataset):
     create_pair(temp_dataset, 'train', 'img_out_bounds', '0 1.5 0.5 0.2 0.2\n')
     assert validate_dataset(str(temp_dataset)) is False
 
-def test_empty_label(temp_dataset):
-    # Empty label file
+def test_empty_label_is_a_valid_negative_example(temp_dataset):
+    # Arquivo de label vazio também representa exemplo negativo.
     create_pair(temp_dataset, 'train', 'img_empty', '')
-    assert validate_dataset(str(temp_dataset)) is False
+    assert validate_dataset(str(temp_dataset)) is True
 
 def test_data_leakage(temp_dataset):
     # Same name in train and val

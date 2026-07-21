@@ -10,7 +10,7 @@ Abaixo está o estado de entrega dos requisitos definidos para o MVP Multimodal:
 | **Azure Speech** | Parcialmente atendido | Código de integração pronto, mas pendente de execução real com credenciais válidas na nuvem. |
 | **Análise Textual** | Atendido | Extração de categorias e cálculo de risco funcionando simuladamente nas dependências e dados transcritos. |
 | **Fusão Multimodal** | Atendido | Motor de regras e agregação de score e evidências construído e testado. |
-| **YOLOv8 Customizado** | Parcialmente atendido | Estrutura, validação e documentação do dataset para a classe `hand_on_face` finalizados. Operando em modo de demonstração (`yolov8n.pt`) até que o arquivo `best.pt` seja treinado e validado. |
+| **YOLOv8 Customizado** | Parcialmente atendido | Estrutura, validação e documentação do dataset para a classe `hand_on_face` finalizados. O pipeline usa MediaPipe Hands + Face Mesh para sinalizar proximidade persistente mão-rosto; isso não substitui a validação do YOLO customizado. |
 | **Relatório Automático** | Atendido | Geração de report consolidado em JSON e Markdown configurada. Validação completa nos testes. |
 | **Dashboard** | Atendido | Interface gráfica Streamlit validada, abas, fallbacks, limites. |
 | **Vídeo de Demonstração** | Não atendido | Pendente, não gravado/registrado ainda. |

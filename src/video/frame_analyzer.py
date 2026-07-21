@@ -99,4 +99,8 @@ class FrameAnalyzer:
         with open(yolo_summary_path, "w", encoding="utf-8") as f:
             json.dump({'objects_detected': analysis.objects_detected}, f, indent=4)
 
+        close_detector = getattr(self.yolo_detector, "close", None)
+        if callable(close_detector):
+            close_detector()
+
         return analysis

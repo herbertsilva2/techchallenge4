@@ -63,8 +63,8 @@ def test_app_ui_components():
     warnings = [w.value for w in at.warning]
     assert any("O sistema continua operando com as modalidades disponíveis" in w for w in warnings)
     
-    # YOLO demo message
-    assert any("yolov8n.pt com classes COCO" in w for w in warnings)
+    # Detector visual apresenta a limitação do modelo customizado pendente.
+    assert any("Modelo customizado hand_on_face" in w for w in warnings)
     
     # Fusion message
     infos = [i.value for i in at.info]

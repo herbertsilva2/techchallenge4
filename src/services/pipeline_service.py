@@ -105,9 +105,10 @@ class PipelineService:
             yolo_detector = YOLODetector()
             yolo_info = yolo_detector.get_info()
             
+            visual_detector_ready = yolo_info.get('custom_model_trained') or yolo_info.get('specialized_gesture_detector')
             modalities['yolo'] = ModalityStatus(
-                'completed' if yolo_info.get('custom_model_trained') else 'partial',
-                reason=None if yolo_info.get('custom_model_trained') else 'Modelo customizado não encontrado. Rodando em modo de demonstração.',
+                'completed' if visual_detector_ready else 'partial',
+                reason=None if yolo_info.get('custom_model_trained') else 'Detector pré-treinado MediaPipe usado',
                 details=yolo_info
             )
 
@@ -249,7 +250,7 @@ class PipelineService:
             result.report_md_path = md_path
 
             self._safe_callback(progress_callback, step, 1.0, "Processamento concluído", result)
-            yolo_demo_mode = not yolo_info.get('custom_model_trained')
+            yolo_demo_mode = not yolo_info.get('custom_model_trained') and not yolo_info.get('specialized_gesture_detector')
             azure_partial = modalities.get('transcription') and modalities['transcription'].status == 'partial'
 
             if azure_partial or yolo_demo_mode:

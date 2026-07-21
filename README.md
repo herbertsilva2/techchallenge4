@@ -159,6 +159,17 @@ pytest
 - A análise de sentimentos e a inferência baseada em texto estão ajustadas primariamente para o idioma `pt-BR`.
 - Modelos customizados YOLO (`best.pt`) requerem hardware acelerado (GPU) para treinamento, e este repositório possui apenas o scaffold.
 
+## Dataset e treinamento YOLO
+
+O processo de coleta ética, anotação e revisão para a classe `hand_on_face` está documentado em [docs/coleta_e_anotacao_yolo.md](docs/coleta_e_anotacao_yolo.md). Depois de preencher o dataset, valide e treine com:
+
+```bash
+python scripts/validate_yolo_dataset.py
+python scripts/train_yolo.py --device 0
+```
+
+O script copia o melhor peso treinado para `models/yolo/best.pt`, caminho carregado automaticamente pelo pipeline. Em computadores sem GPU, use `--device cpu` para um experimento menor; para a entrega final, registre as métricas de validação e teste geradas pelo Ultralytics.
+
 ---
 
 ## Próximos Passos

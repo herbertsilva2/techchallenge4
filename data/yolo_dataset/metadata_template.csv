@@ -1,0 +1,2 @@
+sample_id,split,source_type,license_or_consent_id,created_at,annotator_id,reviewer_id,contains_hand_on_face,notes
+example_0001,train,encenada,CONSENT-EXAMPLE,YYYY-MM-DD,ANNOTATOR-01,REVIEWER-01,yes,Modelo de registro; não incluir nome, rosto identificável ou dado clínico.

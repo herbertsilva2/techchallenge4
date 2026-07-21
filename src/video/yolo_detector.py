@@ -5,30 +5,38 @@ from pathlib import Path
 from ultralytics import YOLO
 
 from src.domain.video_models import ObjectDetection
+from src.video.hand_on_face_detector import HandOnFaceDetector
 
 class YOLODetector:
     def __init__(self, model_path: str = "models/yolo/best.pt", min_confidence: float = 0.5):
         self.model_path = Path(model_path)
         self.min_confidence = min_confidence
         
-        # DEMO MODE: Fallback to yolov8n.pt if best.pt does not exist
+        # Sem peso customizado, usa detector pré-treinado de gesto em vez de
+        # YOLO COCO genérico, que não possui a classe hand_on_face.
         self.is_demo_mode = not self.model_path.exists()
         if self.is_demo_mode:
-            print(f"Modelo {self.model_path} não encontrado. Entrando em MODO DEMO com yolov8n.pt")
-            self.model_used = 'yolov8n.pt'
-            self.model = YOLO(self.model_used)
+            print(f"Modelo {self.model_path} não encontrado. Usando MediaPipe Hands + Face Mesh.")
+            self.model_used = "MediaPipe Hands + Face Mesh"
+            self.model = HandOnFaceDetector()
         else:
             self.model_used = str(self.model_path)
             self.model = YOLO(self.model_used)
 
     def get_info(self) -> dict:
-        return {
-            'model_mode': 'demo' if self.is_demo_mode else 'custom',
+        info = {
+            'model_mode': 'pretrained_gesture' if self.is_demo_mode else 'custom',
             'model_used': self.model_used,
             'custom_model_trained': not self.is_demo_mode
         }
+        if self.is_demo_mode:
+            info.update(self.model.get_info())
+        return info
 
     def detect(self, frame: np.ndarray) -> List[ObjectDetection]:
+        if self.is_demo_mode:
+            return self.model.detect(frame)
+
         # YOLOv8 aceita BGR do OpenCV diretamente
         results = self.model(frame, verbose=False)
         detections = []

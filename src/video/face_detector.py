@@ -57,3 +57,7 @@ class FaceDetector:
             cv2.putText(annotated_frame, text, (x, max(10, y - 10)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         return annotated_frame
+
+    def close(self) -> None:
+        """Libera o recurso nativo do MediaPipe Tasks quando não for mais usado."""
+        self.detector.close()
