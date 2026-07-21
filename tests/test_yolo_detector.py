@@ -4,8 +4,9 @@ from unittest.mock import patch, MagicMock
 from src.video.yolo_detector import YOLODetector
 
 @pytest.fixture
-def mock_yolo():
-    with patch('src.video.yolo_detector.YOLO') as mock:
+def mock_detectors():
+    with patch('src.video.yolo_detector.YOLO') as mock_yolo, \
+         patch('src.video.yolo_detector.HandOnFaceDetector') as mock_hand_on_face:
         # Configurar o mock para retornar um resultado simulado
         mock_result = MagicMock()
         mock_box = MagicMock()
@@ -16,18 +17,26 @@ def mock_yolo():
         mock_box.cls = [0]
         mock_result.boxes = [mock_box]
         
-        mock_instance = mock.return_value
+        mock_instance = mock_yolo.return_value
         mock_instance.return_value = [mock_result]
         mock_instance.names = {0: "hand_on_face", 1: "defensive_posture"}
+        mock_hand_on_face.return_value.get_info.return_value = {
+            "specialized_gesture_detector": True,
+            "model_mode": "pretrained_gesture",
+            "model_used": "MediaPipe Hands + Face Mesh",
+        }
         
-        yield mock
+        yield mock_yolo, mock_hand_on_face
 
-def test_yolo_detector_init_demo_mode(mock_yolo, tmp_path):
-    # Passando um caminho que não existe para forçar MODO DEMO
+def test_yolo_detector_init_uses_pretrained_gesture_detector_when_custom_model_is_missing(mock_detectors, tmp_path):
+    mock_yolo, mock_hand_on_face = mock_detectors
     detector = YOLODetector(model_path=str(tmp_path / "nao_existe.pt"))
-    mock_yolo.assert_called_with('yolov8n.pt')
+    mock_yolo.assert_not_called()
+    mock_hand_on_face.assert_called_once()
+    assert detector.get_info()['model_mode'] == 'pretrained_gesture'
 
-def test_yolo_detector_init_best_model(mock_yolo, tmp_path):
+def test_yolo_detector_init_best_model(mock_detectors, tmp_path):
+    mock_yolo, _ = mock_detectors
     # Criando um arquivo best.pt falso
     model_path = tmp_path / "best.pt"
     model_path.touch()
@@ -35,8 +44,11 @@ def test_yolo_detector_init_best_model(mock_yolo, tmp_path):
     detector = YOLODetector(model_path=str(model_path))
     mock_yolo.assert_called_with(str(model_path))
 
-def test_yolo_detector_detect(mock_yolo):
-    detector = YOLODetector(model_path="dummy_path_to_trigger_demo.pt")
+def test_yolo_detector_detect_with_custom_model(mock_detectors, tmp_path):
+    _, _ = mock_detectors
+    model_path = tmp_path / "best.pt"
+    model_path.touch()
+    detector = YOLODetector(model_path=str(model_path))
     frame = np.zeros((480, 640, 3), dtype=np.uint8)
     
     detections = detector.detect(frame)

@@ -28,10 +28,12 @@ def render_visual_tab(report_data: Dict[str, Any]):
         if video_status.get('reason'):
             st.write(f"Motivo: {video_status.get('reason')}")
 
-    st.subheader("Modelo YOLO")
+    st.subheader("Detector visual especializado")
     st.write(f"Status: {yolo_status.get('status', 'N/A')}")
-    if yolo_status.get('status') == 'partial' or yolo_status.get('reason'):
-        st.warning("Modo de demonstração — yolov8n.pt com classes COCO.")
-        st.warning("Modelo customizado hand_on_face ainda não treinado ou indisponível.")
+    detector_details = yolo_status.get('details', {})
+    if detector_details.get('model_mode') == 'pretrained_gesture':
+        st.info("MediaPipe Hands + Face Mesh detecta proximidade persistente entre mão e rosto.")
+        st.warning("O modelo YOLOv8 customizado ainda não foi treinado; este sinal exige revisão humana.")
+    elif yolo_status.get('status') == 'partial' or yolo_status.get('reason'):
         if yolo_status.get('reason'):
             st.info(yolo_status.get('reason'))

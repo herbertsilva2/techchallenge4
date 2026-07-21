@@ -18,7 +18,7 @@ Não se trata de uma ferramenta diagnóstica. Todo o output gerado deve ser anal
 
 ## Limitações do MVP
 - O sistema opera offline, mas a transcrição depende de credenciais da Azure ativas e conectividade com a internet.
-- A detecção YOLO depende de treinamento customizado para eficácia na classe definida para o MVP (`hand_on_face`). A preparação e validação do dataset foram concluídas na etapa atual, porém o treinamento será realizado em etapas futuras.
+- A detecção YOLO depende de treinamento customizado para eficácia na classe definida para o MVP (`hand_on_face`). O sistema usa MediaPipe Hands + Face Mesh para sinalizar proximidade mão-rosto persistente; é um apoio à triagem e não substitui a validação do YOLO customizado.
 - A fusão multimodal atual emprega regras heurísticas. Um modelo de aprendizado estatístico não foi treinado para esse fim devido às restrições desta fase.
 
 ## Implementação do Dashboard Streamlit

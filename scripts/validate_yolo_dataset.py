@@ -52,13 +52,13 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
                 has_critical_error = True
             all_images_across_splits[img.stem] = split
 
-        # Orphan labels / Images without labels
+        # A imagem pode não ter label: isso representa um exemplo negativo
+        # (sem hand_on_face), comportamento aceito pelo Ultralytics/YOLO.
         images_without_labels = img_stems - lbl_stems
         orphan_labels = lbl_stems - img_stems
         
         if images_without_labels:
-            print(f"ERROR: Found {len(images_without_labels)} images without corresponding labels in {split}.")
-            has_critical_error = True
+            print(f"INFO: Found {len(images_without_labels)} negative image(s) without labels in {split}.")
             
         if orphan_labels:
             print(f"ERROR: Found {len(orphan_labels)} orphan labels (no corresponding image) in {split}.")
@@ -67,8 +67,7 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
         # Label content validation
         for lbl_path in labels:
             if not lbl_path.stat().st_size:
-                print(f"ERROR: Empty label file found: {lbl_path.name}")
-                has_critical_error = True
+                print(f"INFO: Empty label file found (negative image): {lbl_path.name}")
                 continue
 
             with open(lbl_path, 'r') as f:
@@ -115,7 +114,8 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
         print(f"  {split}: {counts[split]}")
         
     if total_images == 0:
-        print("WARNING: Dataset is completely empty. Please add images before training.")
+        print("ERROR: Dataset is completely empty. Please add images before training.")
+        has_critical_error = True
 
     if has_critical_error:
         print("\n[!] Validation FAILED. Critical errors found.")
