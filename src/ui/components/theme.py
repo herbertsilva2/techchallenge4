@@ -105,17 +105,37 @@ def apply_apple_theme():
     }
     
     /* File Uploader */
-    .stFileUploader > div > div {
+    .stFileUploader [data-testid="stFileUploaderDropzone"] {
         background: rgba(255, 255, 255, 0.7) !important;
         border: 2px dashed rgba(0, 0, 0, 0.1) !important;
         border-radius: 18px !important;
         padding: 30px !important;
         transition: all 0.2s ease !important;
+        color: #1D1D1F !important;
     }
     
-    .stFileUploader > div > div:hover {
+    .stFileUploader [data-testid="stFileUploaderDropzone"]:hover {
         border-color: #0071E3 !important;
         background: rgba(0, 113, 227, 0.02) !important;
+    }
+
+    .stFileUploader label,
+    .stFileUploader [data-testid="stFileUploaderDropzone"] *,
+    .stFileUploader [data-testid="stMarkdownContainer"] p {
+        color: #1D1D1F !important;
+    }
+
+    .stFileUploader [data-testid="stBaseButton-secondary"] {
+        background-color: #FFFFFF !important;
+        color: #1D1D1F !important;
+        border: 1px solid rgba(0, 0, 0, 0.14) !important;
+        box-shadow: none !important;
+    }
+
+    .stFileUploader [data-testid="stBaseButton-secondary"] *,
+    .stFileUploader [data-testid="stIconMaterial"] {
+        color: #1D1D1F !important;
+        fill: #1D1D1F !important;
     }
 
     /* Metrics Panels */
@@ -145,7 +165,19 @@ def apply_apple_theme():
     .stAlert {
         border-radius: 12px !important;
         border: none !important;
+        background-color: #FFF4CC !important;
+        color: #3A2A00 !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+    }
+
+    .stAlert *,
+    [data-testid="stAlert"] *,
+    [data-testid="stAlert"] p,
+    [data-testid="stAlert"] div,
+    [data-testid="stAlert"] span,
+    [data-testid="stAlert"] svg {
+        color: #3A2A00 !important;
+        fill: #3A2A00 !important;
     }
     
     /* Progress bar */
