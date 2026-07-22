@@ -3,11 +3,10 @@ import os
 from pathlib import Path
 from typing import List, Dict, Set
 
-VALID_CLASS_IDS = {0, 1, 2}
+VALID_CLASS_IDS = {0, 1}
 CLASS_NAMES = {
     0: "hand_on_face",
-    1: "razor_blade",
-    2: "box_cutter",
+    1: "sharp_object",
 }
 
 def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
@@ -71,11 +70,9 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
             print(f"ERROR: Found {len(orphan_labels)} orphan labels (no corresponding image) in {split}.")
             has_critical_error = True
 
-        # Label content validation
+        # Label content validation. Empty files are valid negative examples.
         for lbl_path in labels:
             if not lbl_path.stat().st_size:
-                print(f"ERROR: Empty label file found: {lbl_path.name}")
-                has_critical_error = True
                 continue
 
             with open(lbl_path, 'r') as f:

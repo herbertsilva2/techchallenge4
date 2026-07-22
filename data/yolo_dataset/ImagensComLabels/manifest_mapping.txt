@@ -1,0 +1,21 @@
+classes:
+0 hand_on_face
+1 sharp
+
+mapping source image -> label file:
+01. b13170b8-f79b-5db4-9ccb-c3e2cdae9956.jpg -> label_hand_on_face_frank_01.txt
+02. dbb4e8ea-eabf-58b0-9c52-6de3be9f7661.jpg -> label_hand_on_face_frank_02.txt
+03. 370796d0-bfab-57ac-9d0b-d64cce0bf436.jpg -> label_hand_on_face_frank_03.txt
+04. 4dc7b44f-1e27-5720-b635-2f64e8bdc07b.jpg -> label_hand_on_face_frank_04.txt
+05. b462048c-47b1-5973-ba2d-2a743872471f.jpg -> label_hand_on_face_frank_05.txt
+06. 207089d6-5ecf-51a6-9804-d0bb0b3ee783.jpg -> label_sharp_frank_01.txt
+07. 8cd261fc-b248-5710-afbf-df296677a10e.jpg -> label_sharp_frank_02.txt
+08. 00790f40-af89-5e5d-aec4-de579d9881a7.jpg -> label_sharp_frank_03.txt
+09. f05f7ed8-dd43-542a-954f-b34bdeaca897.jpg -> label_sharp_frank_04.txt
+10. 8e36f457-cbdc-5079-aa56-2ed12c308b99.jpg -> label_sharp_frank_05.txt
+11. 3a83e3af-5244-5ed2-a470-c20ad581a971.jpg -> label_sharp_frank_06.txt
+12. 3974be08-063b-56ff-9c29-f33eb0167dc0.jpg -> label_sharp_frank_07.txt
+13. d69a37c3-2c71-53c2-8c5d-8861433534f5.jpg -> label_sharp_frank_08.txt
+14. 092e3ee1-5f04-5194-b4f1-2eacf845db3f.jpg -> label_sharp_frank_09.txt
+15. e7a1afc3-c15c-53b9-bf52-201c5071fce6.jpg -> label_sharp_frank_10.txt
+16. cdfedaa3-39a6-5437-98ed-2cbf1f4b10ec.jpg -> label_sharp_frank_11.txt

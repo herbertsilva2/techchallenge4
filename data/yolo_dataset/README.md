@@ -2,14 +2,13 @@
 
 ## Definição das Classes
 
-Para o MVP do Tech Challenge Fase 4, adotamos três classes customizadas para identificação de sinais visuais relevantes em contexto de entrevista, consulta ou triagem:
+Para o MVP do Tech Challenge Fase 4, adotamos duas classes customizadas para identificação de sinais visuais relevantes em contexto de entrevista, consulta ou triagem:
 - `0: hand_on_face`
-- `1: razor_blade`
-- `2: box_cutter`
+- `1: sharp_object`
 
 A classe `hand_on_face` representa uma pessoa com uma das mãos (ou ambas) tocando ou cobrindo parcialmente o rosto. O gesto é tratado como sinal não verbal potencialmente associado a desconforto, vergonha, medo, hesitação ou receio.
 
-As classes `razor_blade` e `box_cutter` representam objetos cortantes que podem ser relevantes para triagem humana quando aparecem em contexto de monitoramento assistido. O sistema não conclui risco de automutilação; ele apenas registra evidências visuais para revisão por profissional habilitado.
+A classe `sharp_object` agrupa objetos cortantes ou suspeitos, como gilete, lamina, estilete, faca pequena, tesoura ou canivete. Esses objetos podem ser relevantes para triagem humana quando aparecem em contexto de monitoramento assistido. O sistema não conclui risco de automutilação; ele apenas registra evidências visuais para revisão por profissional habilitado.
 
 ### Exemplos Positivos (Devem ser anotados)
 - Mão cobrindo o rosto (ex: de nervosismo ou tensão).

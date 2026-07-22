@@ -19,8 +19,7 @@ class RiskRules:
     YOLO_OBJECT_WEIGHTS = {
         "hand_on_face": 10.0,
         "defensive_posture": 20.0,
-        "razor_blade": 30.0,
-        "box_cutter": 30.0,
+        "sharp_object": 30.0,
         "knife": 25.0,
         "scissors": 20.0
     }
@@ -119,7 +118,7 @@ class RiskRules:
                     justifications.append(f"Mão no rosto detectada em {count} frame(s).")
                 elif obj_name == "defensive_posture":
                     justifications.append(f"Postura defensiva detectada em {count} frame(s).")
-                elif obj_name in {"razor_blade", "box_cutter", "knife", "scissors"}:
+                elif obj_name in {"sharp_object", "knife", "scissors"}:
                     justifications.append(f"Objeto cortante ou suspeito ({obj_name}) detectado em {count} frame(s).")
                 else:
                     justifications.append(f"Objeto {obj_name} detectado em {count} frame(s).")

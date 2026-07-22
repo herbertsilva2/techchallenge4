@@ -5,14 +5,12 @@ from pathlib import Path
 
 CLASS_NAMES = {
     0: "hand_on_face",
-    1: "razor_blade",
-    2: "box_cutter",
+    1: "sharp_object",
 }
 
 CLASS_COLORS = {
     0: (0, 255, 0),
     1: (0, 0, 255),
-    2: (255, 0, 0),
 }
 
 def draw_bboxes(img_path: Path, label_path: Path, output_path: Path):
