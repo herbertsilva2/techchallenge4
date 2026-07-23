@@ -21,6 +21,7 @@ Este projeto consiste em uma plataforma de inteligência artificial de triagem e
 - ✔ **Fusão multimodal (Fusion Engine)**: Correlação de dados de áudio, texto e visão para definir um Score final de risco.
 - ✔ **Dashboard Streamlit**: Visualização em tempo real das etapas.
 - ✔ **Relatórios**: Geração de saídas consolidadas em JSON e Markdown.
+- ✔ **Alerta à equipe médica**: Encaminhamento por e-mail SMTP, com registro simulado auditável quando não configurado.
 
 ---
 
@@ -118,6 +119,8 @@ streamlit run app.py
 ```
 > O Dashboard estará disponível em `http://localhost:8501`.
 
+> **Configuração local obrigatória:** antes de executar, crie o arquivo `.env.local` na raiz do projeto. Ele guarda as credenciais locais (Azure e SMTP) e não é versionado. Use `.env.example` como referência; sem as credenciais SMTP, os alertas serão registrados em modo simulado.
+
 ### Executar via CLI
 ```bash
 python main.py data/samples/test_video.mp4
@@ -165,6 +168,22 @@ Garantimos a integridade do código utilizando `pytest`. Para testar toda a apli
 ```bash
 pytest
 ```
+
+---
+
+## Alerta por e-mail
+
+Ao concluir cada análise, o sistema encaminha um e-mail de apoio à triagem com nível de risco, evidências, recomendações e transcrição. Configure um servidor SMTP no arquivo `.env.local` (use `.env.example` como modelo). Para Gmail, use uma senha de aplicativo; nunca use nem versione a senha da conta. O `.env.local` é ignorado pelo Git.
+
+Crie o arquivo na raiz do repositório antes da execução local:
+
+```bash
+cp .env.example .env.local
+```
+
+Preencha nele somente as variáveis necessárias ao seu ambiente. Não coloque credenciais no `.env`, pois esse arquivo já é rastreado pelo repositório.
+
+Sem as variáveis SMTP, o envio é simulado e salvo em `outputs/alerts/`. O dashboard, o relatório JSON e o Markdown exibem o status `sent`, `simulated` ou `failed`, permitindo demonstrar o fluxo de encaminhamento.
 
 ---
 

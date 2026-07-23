@@ -25,6 +25,7 @@ from src.fusion.fusion_engine import FusionEngine
 from src.fusion.fusion_service import FusionService
 from src.report.report_generator import ReportGenerator
 from src.report.report_service import ReportService
+from src.alerts.email_alert_service import EmailAlertService
 
 ProgressCallback = Callable[[ProcessingStep, float, str], None]
 
@@ -219,7 +220,19 @@ class PipelineService:
             })
             result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
 
-            # 8. Final Report
+            # 8. Alert dispatch. Delivery failure must never invalidate the analysis.
+            self._safe_callback(progress_callback, step, 0.94, "Encaminhando alerta à equipe médica...", result)
+            alert = EmailAlertService(out_dir / "alerts").dispatch(
+                fusion_result_obj,
+                result.transcript.full_text if getattr(result, 'transcript', None) else None,
+            )
+            result.alert_notification = alert
+            if alert.status == "failed":
+                result.messages.append(f"Falha ao enviar alerta por e-mail: {alert.error}")
+            elif alert.status == "simulated":
+                result.messages.append("Alerta por e-mail simulado: SMTP não configurado.")
+
+            # 9. Final Report
             self._safe_callback(progress_callback, step, 0.95, "Gerando relatórios...", result)
             report_data = ReportData(
                 timestamp=datetime.utcnow().isoformat() + "Z",
@@ -231,7 +244,8 @@ class PipelineService:
                 speech_provider="Azure AI Speech" if transcription_result else None,
                 language=transcription_result.get('idioma', 'pt-BR') if transcription_result else None,
                 speech_status=modalities['transcription'].status,
-                audio_analysis=result.audio_analysis
+                audio_analysis=result.audio_analysis,
+                alert_notification=alert,
             )
 
             report_gen = ReportGenerator(str(report_output_dir))

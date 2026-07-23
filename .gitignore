@@ -4,7 +4,8 @@ __pycache__/
 *$py.class
 
 # Environments
-# .env (comentado temporariamente)
+.env
+.env.local
 .venv
 env/
 venv/

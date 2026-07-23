@@ -2,6 +2,7 @@ import pytest
 import json
 from pathlib import Path
 from src.domain.report_models import ReportData, ModalityStatus
+from src.domain.alert_models import AlertNotification
 from src.domain.video_models import VideoInfo
 from src.domain.fusion_models import FusionResult, RiskLevel, Evidence
 from src.report.report_generator import ReportGenerator
@@ -65,6 +66,18 @@ def test_markdown_ethical_warning_and_status(tmp_path, sample_report_data):
     assert "### YOLO" in content
     assert "- **Status:** partial" in content
     assert "- **Motivo:** Modelo customizado não encontrado" in content
+
+def test_markdown_includes_alert_audit_status_and_masks_recipient(tmp_path, sample_report_data):
+    sample_report_data.alert_notification = AlertNotification(
+        alert_id="alert-123", created_at="2026-07-15T00:00:00Z", channel="email",
+        status="sent", recipients=["doctor@example.com"],
+    )
+    _, md_path = ReportGenerator(str(tmp_path)).generate(sample_report_data)
+
+    content = md_path.read_text(encoding="utf-8")
+    assert "## Alerta à Equipe Médica" in content
+    assert "- **Status:** sent" in content
+    assert "do***@example.com" in content
 
 def test_low_recommendations_with_evidence():
     recs = RiskRules.get_recommendations(RiskLevel.LOW, has_evidences=True)

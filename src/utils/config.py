@@ -2,8 +2,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-# Carrega variáveis do .env (se existir)
+# Carrega configurações públicas do .env e segredos locais não versionados do .env.local.
 load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env.local", override=True)
 
 # Configurações do Azure Speech
 AZURE_SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")

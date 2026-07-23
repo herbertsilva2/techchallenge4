@@ -3,6 +3,7 @@ from typing import Dict, Any, Optional
 from src.domain.video_models import VideoInfo
 from src.domain.fusion_models import FusionResult
 from src.domain.audio_models import AudioAnalysis
+from src.domain.alert_models import AlertNotification
 
 @dataclass
 class ModalityStatus:
@@ -30,6 +31,7 @@ class ReportData:
     language: Optional[str] = None
     speech_status: Optional[str] = None
     audio_analysis: Optional[AudioAnalysis] = None
+    alert_notification: Optional[AlertNotification] = None
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
@@ -49,4 +51,6 @@ class ReportData:
             result['speech_status'] = self.speech_status
         if self.audio_analysis is not None:
             result['audio_analysis'] = self.audio_analysis.to_dict()
+        if self.alert_notification is not None:
+            result['alert_notification'] = self.alert_notification.to_dict()
         return result

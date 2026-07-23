@@ -4,6 +4,13 @@ from pathlib import Path
 from typing import Tuple
 from src.domain.report_models import ReportData
 
+
+def _mask_recipient(recipient: str) -> str:
+    if "@" not in recipient:
+        return recipient
+    local, domain = recipient.split("@", 1)
+    return f"{local[:2]}***@{domain}"
+
 class ReportGenerator:
     """Gera relatórios em JSON e Markdown."""
 
@@ -86,7 +93,7 @@ class ReportGenerator:
                 for e in data.fusion_result.evidences:
                     lines.append(f"- [{e.modality}] {e.description} (Confiança: {e.confidence:.2f})")
                 lines.append("")
-            
+
             if data.fusion_result.justifications:
                 lines.append("### Justificativas")
                 for j in data.fusion_result.justifications:
@@ -98,6 +105,21 @@ class ReportGenerator:
                 for r in data.fusion_result.recommendations:
                     lines.append(f"- {r}")
                 lines.append("")
+
+        if data.alert_notification:
+            alert = data.alert_notification
+            lines.append("## Alerta à Equipe Médica")
+            lines.append(f"- **Canal:** {alert.channel}")
+            lines.append(f"- **Status:** {alert.status}")
+            lines.append(f"- **ID de rastreio:** {alert.alert_id}")
+            lines.append(f"- **Data/hora:** {alert.created_at}")
+            if alert.recipients:
+                lines.append(f"- **Destinatários:** {', '.join(_mask_recipient(item) for item in alert.recipients)}")
+            if alert.outbox_path:
+                lines.append(f"- **Registro de demonstração:** {alert.outbox_path}")
+            if alert.error:
+                lines.append(f"- **Erro de envio:** {alert.error}")
+            lines.append("")
 
         with open(path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))

@@ -12,6 +12,7 @@ Abaixo está o estado de entrega dos requisitos definidos para o MVP Multimodal:
 | **Fusão Multimodal** | Atendido | Motor de regras e agregação de score e evidências construído e testado. |
 | **YOLOv8 Customizado** | Parcialmente atendido | Estrutura, validação e documentação do dataset para a classe `hand_on_face` finalizados. O pipeline usa MediaPipe Hands + Face Mesh para sinalizar proximidade persistente mão-rosto; isso não substitui a validação do YOLO customizado. |
 | **Relatório Automático** | Atendido | Geração de report consolidado em JSON e Markdown configurada. Validação completa nos testes. |
+| **Fluxo de alerta à equipe médica** | Atendido | E-mail SMTP após a fusão, status auditável no relatório/dashboard e saída local simulada para demonstração sem credenciais. |
 | **Dashboard** | Atendido | Interface gráfica Streamlit validada, abas, fallbacks, limites. |
 | **Vídeo de Demonstração** | Não atendido | Pendente, não gravado/registrado ainda. |
 | **Execução Geral Atual** | Parcial | Processamento funcional porém bloqueado parcialmente pela ausência de credenciais Azure e treinamento do modelo YOLO. |

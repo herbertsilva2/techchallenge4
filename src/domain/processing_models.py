@@ -5,6 +5,7 @@ from src.domain.video_models import VideoInfo, VideoAnalysis
 from src.domain.audio_models import AudioAnalysis
 from src.domain.text_models import Transcript, TextAnalysis
 from src.domain.fusion_models import FusionResult
+from src.domain.alert_models import AlertNotification
 
 class ProcessingStep(Enum):
     """Etapas do pipeline de processamento."""
@@ -45,6 +46,7 @@ class PipelineResult:
     transcript: Optional[Transcript] = None
     text_analysis: Optional[TextAnalysis] = None
     fusion_result: Optional[FusionResult] = None
+    alert_notification: Optional[AlertNotification] = None
     report_json_path: Optional[str] = None
     report_md_path: Optional[str] = None
     messages: List[str] = field(default_factory=list)
@@ -61,6 +63,7 @@ class PipelineResult:
             'transcript': self.transcript.to_dict() if self.transcript else None,
             'text_analysis': self.text_analysis.to_dict() if self.text_analysis else None,
             'fusion_result': self.fusion_result.to_dict() if self.fusion_result else None,
+            'alert_notification': self.alert_notification.to_dict() if self.alert_notification else None,
             'report_json_path': self.report_json_path,
             'report_md_path': self.report_md_path,
             'messages': self.messages,
@@ -79,6 +82,7 @@ class PipelineResult:
             transcript=Transcript.from_dict(data['transcript']) if data.get('transcript') else None,
             text_analysis=TextAnalysis.from_dict(data['text_analysis']) if data.get('text_analysis') else None,
             fusion_result=FusionResult.from_dict(data['fusion_result']) if data.get('fusion_result') else None,
+            alert_notification=AlertNotification.from_dict(data['alert_notification']) if data.get('alert_notification') else None,
             report_json_path=data.get('report_json_path'),
             report_md_path=data.get('report_md_path'),
             messages=data.get('messages', []),

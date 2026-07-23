@@ -112,6 +112,15 @@ if uploaded_file is not None:
                 st.warning("Processamento concluído com restrições (PARTIAL). O sistema continua operando com as modalidades disponíveis.")
             else:
                 st.success("Processamento síncrono concluído com sucesso!")
+
+            alert = getattr(st.session_state.pipeline_result, "alert_notification", None)
+            if alert:
+                if alert.status == "sent":
+                    st.success(f"Alerta por e-mail enviado à equipe médica (ID: {alert.alert_id[:8]}).")
+                elif alert.status == "simulated":
+                    st.info(f"Alerta por e-mail simulado e registrado em {alert.outbox_path}.")
+                else:
+                    st.error(f"Falha ao enviar alerta por e-mail: {alert.error}")
             
             # Painel de Métricas (usando dados extraídos do report_data ou result_view_data)
             view_data = dashboard_service.build_view_data(st.session_state.pipeline_result, st.session_state.report_data)
