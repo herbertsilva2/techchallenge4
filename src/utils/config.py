@@ -12,6 +12,18 @@ AZURE_SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
 AZURE_SPEECH_LANGUAGE = os.getenv("AZURE_SPEECH_LANGUAGE", "pt-BR")
 AZURE_SPEECH_ENDPOINT = os.getenv("AZURE_SPEECH_ENDPOINT")
 
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+
+
+# Objetos cortantes podem ser pequenos ou parcialmente ocultos; o limiar é
+# validado temporalmente pelo FrameAnalyzer antes de gerar risco.
+YOLO_SHARP_OBJECT_MIN_CONFIDENCE = _env_float("YOLO_SHARP_OBJECT_MIN_CONFIDENCE", 0.10)
+
 # Caminho base do projeto
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 

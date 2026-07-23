@@ -57,3 +57,23 @@ def test_yolo_detector_detect_with_custom_model(mock_detectors, tmp_path):
     assert detections[0].class_name == "hand_on_face"
     assert detections[0].confidence == 0.8
     assert detections[0].bbox == (10, 20, 100, 100)
+
+def test_yolo_detector_accepts_lower_threshold_only_for_sharp_object(mock_detectors, tmp_path):
+    mock_yolo, _ = mock_detectors
+    model_path = tmp_path / "best.pt"
+    model_path.touch()
+    model = mock_yolo.return_value
+    box = model.return_value[0].boxes[0]
+    box.conf = [0.129]
+    box.cls = [1]
+    model.names = {0: "hand_on_face", 1: "sharp_object"}
+
+    detector = YOLODetector(model_path=str(model_path), min_confidence=0.25, sharp_object_min_confidence=0.10)
+    detections = detector.detect(np.zeros((480, 640, 3), dtype=np.uint8))
+
+    assert len(detections) == 1
+    assert detections[0].class_name == "sharp_object"
+
+    box.cls = [0]
+    detections = detector.detect(np.zeros((480, 640, 3), dtype=np.uint8))
+    assert detections == []

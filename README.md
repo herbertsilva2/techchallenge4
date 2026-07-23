@@ -185,6 +185,10 @@ Preencha nele somente as variáveis necessárias ao seu ambiente. Não coloque c
 
 Sem as variáveis SMTP, o envio é simulado e salvo em `outputs/alerts/`. O dashboard, o relatório JSON e o Markdown exibem o status `sent`, `simulated` ou `failed`, permitindo demonstrar o fluxo de encaminhamento.
 
+## Detecção de objeto cortante
+
+O detector usa o limite geral de confiança `0,25`, mas aceita candidatos `sharp_object` a partir de `YOLO_SHARP_OBJECT_MIN_CONFIDENCE=0.10`. Um objeto cortante só é registrado como evidência de risco quando aparece em ao menos 2 dos últimos 3 frames analisados. Esse ajuste favorece objetos pequenos ou parcialmente ocultos, mas continua exigindo revisão humana e não substitui o retreinamento com imagens representativas.
+
 ---
 
 ## Evidências e Telas

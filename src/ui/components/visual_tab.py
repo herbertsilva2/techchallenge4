@@ -19,6 +19,16 @@ def render_visual_tab(report_data: Dict[str, Any]):
             st.metric("Faces Detectadas", details.get('faces_detected', 0))
         with col3:
             st.metric("Objetos Detectados", details.get('objects_detected', 0))
+
+        candidate_frames = details.get('sharp_object_candidate_frames', 0)
+        if candidate_frames:
+            st.info(
+                "Objeto cortante: "
+                f"{details.get('confirmed_sharp_object_frames', 0)} frame(s) confirmado(s) "
+                f"de {candidate_frames} candidato(s); maior confiança: "
+                f"{details.get('max_sharp_object_confidence', 0.0):.2f}. "
+                "Sinal de apoio à triagem, sujeito a revisão humana."
+            )
             
         if video_status.get('reason'):
             st.info(f"Nota: {video_status.get('reason')}")

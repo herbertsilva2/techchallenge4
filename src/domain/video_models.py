@@ -103,6 +103,9 @@ class VideoAnalysis:
     frames: List[FrameAnalysis]
     objects_detected: int = 0
     frames_with_objects: int = 0
+    sharp_object_candidate_frames: int = 0
+    confirmed_sharp_object_frames: int = 0
+    max_sharp_object_confidence: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -115,6 +118,9 @@ class VideoAnalysis:
             'frames_without_faces': self.frames_without_faces,
             'objects_detected': self.objects_detected,
             'frames_with_objects': self.frames_with_objects,
+            'sharp_object_candidate_frames': self.sharp_object_candidate_frames,
+            'confirmed_sharp_object_frames': self.confirmed_sharp_object_frames,
+            'max_sharp_object_confidence': self.max_sharp_object_confidence,
             'frames': [frame.to_dict() for frame in self.frames]
         }
 
@@ -130,5 +136,8 @@ class VideoAnalysis:
             frames_without_faces=data.get('frames_without_faces', 0),
             objects_detected=data.get('objects_detected', 0),
             frames_with_objects=data.get('frames_with_objects', 0),
+            sharp_object_candidate_frames=data.get('sharp_object_candidate_frames', 0),
+            confirmed_sharp_object_frames=data.get('confirmed_sharp_object_frames', 0),
+            max_sharp_object_confidence=data.get('max_sharp_object_confidence', 0.0),
             frames=[FrameAnalysis.from_dict(f) for f in data.get('frames', [])]
         )

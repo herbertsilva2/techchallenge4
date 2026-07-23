@@ -6,11 +6,18 @@ from src.video.face_detector import FaceDetector
 from src.domain.video_models import VideoAnalysis
 
 class FrameAnalyzer:
-    def __init__(self, input_dir: str, output_dir: str, yolo_detector=None):
+    SHARP_OBJECT_WINDOW_SIZE = 3
+    SHARP_OBJECT_MIN_HITS = 2
+
+    def __init__(self, input_dir: str, output_dir: str, yolo_detector=None,
+                 sharp_object_window_size: int = SHARP_OBJECT_WINDOW_SIZE,
+                 sharp_object_min_hits: int = SHARP_OBJECT_MIN_HITS):
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
         self.detector = FaceDetector()
         self.yolo_detector = yolo_detector
+        self.sharp_object_window_size = sharp_object_window_size
+        self.sharp_object_min_hits = sharp_object_min_hits
 
     def analyze_frames(self) -> VideoAnalysis | None:
         frames_dir = self.input_dir / "frames"
@@ -32,6 +39,10 @@ class FrameAnalyzer:
         total_objetos_detectados = 0
         
         frames_list = []
+        sharp_object_history = []
+        sharp_object_candidate_frames = 0
+        confirmed_sharp_object_frames = 0
+        max_sharp_object_confidence = 0.0
 
         if not frames_dir.exists():
             return None
@@ -48,7 +59,26 @@ class FrameAnalyzer:
                 continue
 
             face_detections = self.detector.detect(frame)
-            object_detections = self.yolo_detector.detect(frame)
+            raw_object_detections = self.yolo_detector.detect(frame)
+            sharp_object_detections = [obj for obj in raw_object_detections if obj.class_name.lower() == "sharp_object"]
+            non_sharp_object_detections = [obj for obj in raw_object_detections if obj.class_name.lower() != "sharp_object"]
+            has_sharp_candidate = bool(sharp_object_detections)
+            sharp_object_history.append(has_sharp_candidate)
+            sharp_object_history = sharp_object_history[-self.sharp_object_window_size:]
+            if has_sharp_candidate:
+                sharp_object_candidate_frames += 1
+                max_sharp_object_confidence = max(
+                    max_sharp_object_confidence, max(obj.confidence for obj in sharp_object_detections)
+                )
+
+            # Candidatos de baixa confiança só viram evidência de risco após
+            # confirmação em 2 dos últimos 3 frames analisados.
+            sharp_object_confirmed = (
+                has_sharp_candidate and sum(sharp_object_history) >= self.sharp_object_min_hits
+            )
+            object_detections = non_sharp_object_detections + (sharp_object_detections if sharp_object_confirmed else [])
+            if sharp_object_confirmed:
+                confirmed_sharp_object_frames += 1
 
             if len(face_detections) > 0:
                 frames_com_rosto += 1
@@ -87,7 +117,10 @@ class FrameAnalyzer:
             frames_without_faces=frames_sem_rosto,
             objects_detected=total_objetos_detectados,
             frames_with_objects=frames_com_objetos,
-            frames=frames_list
+            frames=frames_list,
+            sharp_object_candidate_frames=sharp_object_candidate_frames,
+            confirmed_sharp_object_frames=confirmed_sharp_object_frames,
+            max_sharp_object_confidence=max_sharp_object_confidence,
         )
 
         with open(summary_path, "w", encoding="utf-8") as f:
@@ -97,7 +130,12 @@ class FrameAnalyzer:
             json.dump({'faces_detected': analysis.faces_detected}, f, indent=4)
             
         with open(yolo_summary_path, "w", encoding="utf-8") as f:
-            json.dump({'objects_detected': analysis.objects_detected}, f, indent=4)
+            json.dump({
+                'objects_detected': analysis.objects_detected,
+                'sharp_object_candidate_frames': analysis.sharp_object_candidate_frames,
+                'confirmed_sharp_object_frames': analysis.confirmed_sharp_object_frames,
+                'max_sharp_object_confidence': analysis.max_sharp_object_confidence,
+            }, f, indent=4)
 
         close_detector = getattr(self.yolo_detector, "close", None)
         if callable(close_detector):

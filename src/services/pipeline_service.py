@@ -112,7 +112,14 @@ class PipelineService:
                 video_analysis = FrameAnalyzer(str(out_dir), str(out_dir), yolo_detector=yolo_detector).analyze_frames()
                 if video_analysis:
                     result.video_analysis = video_analysis
-                    modalities['video'] = ModalityStatus('partial' if video_analysis.faces_detected == 0 else 'completed', reason='Nenhum rosto detectado.' if video_analysis.faces_detected == 0 else None, details={'frames_analyzed': video_analysis.frames_analyzed, 'faces_detected': video_analysis.faces_detected, 'objects_detected': video_analysis.objects_detected})
+                    modalities['video'] = ModalityStatus('partial' if video_analysis.faces_detected == 0 else 'completed', reason='Nenhum rosto detectado.' if video_analysis.faces_detected == 0 else None, details={
+                        'frames_analyzed': video_analysis.frames_analyzed,
+                        'faces_detected': video_analysis.faces_detected,
+                        'objects_detected': video_analysis.objects_detected,
+                        'sharp_object_candidate_frames': video_analysis.sharp_object_candidate_frames,
+                        'confirmed_sharp_object_frames': video_analysis.confirmed_sharp_object_frames,
+                        'max_sharp_object_confidence': video_analysis.max_sharp_object_confidence,
+                    })
                 else:
                     modalities['video'] = ModalityStatus('partial', reason='Erro na análise de frames.')
                 result.execution_times.append(ExecutionTime(step=step, duration_seconds=time.time() - start_time))
