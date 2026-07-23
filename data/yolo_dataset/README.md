@@ -1,16 +1,21 @@
 # Dataset YOLOv8 - MVP Fase 4
 
-## Definição da Classe
+## Definição das Classes
 
-Para o MVP do Tech Challenge Fase 4, adotamos uma única classe para identificação de desconforto/tensão na imagem:
+Para o MVP do Tech Challenge Fase 4, adotamos duas classes customizadas para identificação de sinais visuais relevantes em contexto de entrevista, consulta ou triagem:
 - `0: hand_on_face`
+- `1: sharp_object`
 
-Esta classe representa uma pessoa com uma das mãos (ou ambas) tocando ou cobrindo parcialmente o rosto.
+A classe `hand_on_face` representa uma pessoa com uma das mãos (ou ambas) tocando ou cobrindo parcialmente o rosto. O gesto é tratado como sinal não verbal potencialmente associado a desconforto, vergonha, medo, hesitação ou receio.
+
+A classe `sharp_object` agrupa objetos cortantes ou suspeitos, como gilete, lamina, estilete, faca pequena, tesoura ou canivete. Esses objetos podem ser relevantes para triagem humana quando aparecem em contexto de monitoramento assistido. O sistema não conclui risco de automutilação; ele apenas registra evidências visuais para revisão por profissional habilitado.
 
 ### Exemplos Positivos (Devem ser anotados)
 - Mão cobrindo o rosto (ex: de nervosismo ou tensão).
 - Mão tocando a testa, olhos, nariz, boca ou bochecha.
 - O gesto deve ser claramente visível e delimitável.
+- Lâmina de barbear/gilete claramente visível.
+- Estilete/box cutter claramente visível.
 
 ### Exclusões (Não devem ser anotados)
 - Mão distante do rosto.
@@ -19,6 +24,8 @@ Esta classe representa uma pessoa com uma das mãos (ou ambas) tocando ou cobrin
 - Imagem sem pessoa.
 - Mão de outra pessoa próxima ao rosto.
 - Contato muito ambíguo, parcialmente oculto ou fora de contexto.
+- Objetos cortantes muito distantes, borrados ou impossíveis de distinguir.
+- Objetos parecidos com gilete/estilete sem confirmação visual suficiente.
 
 ## Formato das Anotações
 As anotações seguem o formato padrão do YOLO, onde cada imagem tem um arquivo `.txt` correspondente contendo:

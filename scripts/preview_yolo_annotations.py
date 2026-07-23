@@ -3,6 +3,16 @@ import argparse
 import os
 from pathlib import Path
 
+CLASS_NAMES = {
+    0: "hand_on_face",
+    1: "sharp_object",
+}
+
+CLASS_COLORS = {
+    0: (0, 255, 0),
+    1: (0, 0, 255),
+}
+
 def draw_bboxes(img_path: Path, label_path: Path, output_path: Path):
     if not label_path.exists():
         return False
@@ -39,10 +49,10 @@ def draw_bboxes(img_path: Path, label_path: Path, output_path: Path):
                 x2 = x1 + box_w
                 y2 = y1 + box_h
                 
-                color = (0, 255, 0) # Green for hand_on_face
+                color = CLASS_COLORS.get(cls_id, (0, 255, 255))
                 cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
                 
-                label_text = f"cls:{cls_id}"
+                label_text = CLASS_NAMES.get(cls_id, f"cls:{cls_id}")
                 cv2.putText(img, label_text, (x1, max(10, y1 - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
                 
             except ValueError:

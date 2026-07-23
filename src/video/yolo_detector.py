@@ -8,7 +8,7 @@ from src.domain.video_models import ObjectDetection
 from src.video.hand_on_face_detector import HandOnFaceDetector
 
 class YOLODetector:
-    def __init__(self, model_path: str = "models/yolo/best.pt", min_confidence: float = 0.5):
+    def __init__(self, model_path: str = "models/yolo/best.pt", min_confidence: float = 0.25):
         self.model_path = Path(model_path)
         self.min_confidence = min_confidence
         

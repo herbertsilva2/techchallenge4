@@ -3,6 +3,12 @@ import os
 from pathlib import Path
 from typing import List, Dict, Set
 
+VALID_CLASS_IDS = {0, 1}
+CLASS_NAMES = {
+    0: "hand_on_face",
+    1: "sharp_object",
+}
+
 def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
     print("=== YOLO Dataset Validation ===")
     root_path = Path(dataset_dir)
@@ -64,10 +70,9 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
             print(f"ERROR: Found {len(orphan_labels)} orphan labels (no corresponding image) in {split}.")
             has_critical_error = True
 
-        # Label content validation
+        # Label content validation. Empty files are valid negative examples.
         for lbl_path in labels:
             if not lbl_path.stat().st_size:
-                print(f"INFO: Empty label file found (negative image): {lbl_path.name}")
                 continue
 
             with open(lbl_path, 'r') as f:
@@ -90,8 +95,9 @@ def validate_dataset(dataset_dir: str = "data/yolo_dataset") -> bool:
                         w = float(parts[3])
                         h = float(parts[4])
                         
-                        if cls_id != 0:
-                            print(f"ERROR: Invalid class_id {cls_id} in {lbl_path.name} (Expected 0)")
+                        if cls_id not in VALID_CLASS_IDS:
+                            valid_ids = ", ".join(str(i) for i in sorted(VALID_CLASS_IDS))
+                            print(f"ERROR: Invalid class_id {cls_id} in {lbl_path.name} (Expected one of: {valid_ids})")
                             has_critical_error = True
                             
                         for val in [x, y, w, h]:

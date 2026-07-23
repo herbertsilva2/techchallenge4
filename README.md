@@ -125,6 +125,40 @@ python main.py data/samples/test_video.mp4
 
 ---
 
+## Treinamento Rápido do YOLO Customizado
+
+O dataset customizado usa as classes `hand_on_face` e `sharp_object`, configuradas em `data/yolo_dataset/dataset.yaml`.
+
+Validar o dataset:
+```bash
+source .venv/bin/activate
+python scripts/validate_yolo_dataset.py
+```
+
+Treinar o modelo:
+```bash
+python scripts/train_yolo_custom.py \
+  --data data/yolo_dataset/dataset.yaml \
+  --base-model yolov8n.pt \
+  --epochs 50 \
+  --imgsz 640 \
+  --batch 8 \
+  --name hand_safety_yolov8n
+```
+
+Copiar o melhor modelo para o caminho usado pela aplicação:
+```bash
+mkdir -p models/yolo
+cp runs/detect/hand_safety_yolov8n/weights/best.pt models/yolo/best.pt
+```
+
+Executar o dashboard com o modelo treinado:
+```bash
+streamlit run app.py
+```
+
+---
+
 ## Testes
 
 Garantimos a integridade do código utilizando `pytest`. Para testar toda a aplicação:
