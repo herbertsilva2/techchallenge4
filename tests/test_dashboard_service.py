@@ -1,7 +1,7 @@
 import pytest
 import os
 from unittest.mock import patch, MagicMock
-from src.services.dashboard_service import DashboardService, MAX_UPLOAD_SIZE_BYTES
+from src.services.dashboard_service import CONSENT_NOTICE, DashboardService, MAX_UPLOAD_SIZE_BYTES
 from src.domain.processing_models import PipelineResult
 
 @pytest.fixture
@@ -59,3 +59,9 @@ def test_load_generated_results(dashboard_service):
     
     assert report_data == {"status": "ok"}
     assert report_md == "# Report"
+
+
+def test_consent_notice_explains_disposal_and_transcript_risk():
+    assert "apagados automaticamente" in CONSENT_NOTICE
+    assert "não solicita nem apresenta campos de identificação pessoal" in CONSENT_NOTICE
+    assert "transcrição pode reproduzir conteúdo pessoal" in CONSENT_NOTICE

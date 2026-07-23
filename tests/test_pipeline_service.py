@@ -98,3 +98,30 @@ def test_pipeline_custom_output_dir(mock_dependencies, tmp_path):
     service = PipelineService()
     result = service.execute(Path("test.mp4"), output_dir=tmp_path)
     assert result.status == "completed"
+
+
+def test_pipeline_removes_derived_media_after_success(mock_dependencies, tmp_path):
+    frames = tmp_path / "frames"
+    audio = tmp_path / "audio"
+    frames.mkdir()
+    audio.mkdir()
+    (frames / "frame_000001.jpg").write_bytes(b"frame")
+    (audio / "audio.wav").write_bytes(b"audio")
+
+    PipelineService().execute(Path("test.mp4"), output_dir=tmp_path)
+
+    assert not frames.exists()
+    assert not audio.exists()
+
+
+def test_pipeline_removes_derived_media_after_failure(mock_dependencies, tmp_path):
+    frames = tmp_path / "frames"
+    audio = tmp_path / "audio"
+    frames.mkdir()
+    audio.mkdir()
+    mock_dependencies['vl'].return_value.validate.side_effect = Exception("Erro Fatal")
+
+    PipelineService().execute(Path("test.mp4"), output_dir=tmp_path)
+
+    assert not frames.exists()
+    assert not audio.exists()

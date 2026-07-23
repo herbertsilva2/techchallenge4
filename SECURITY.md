@@ -15,9 +15,13 @@ Este projeto integra-se com serviços em nuvem (Azure AI Speech) que exigem chav
 Para garantir a segurança do repositório público:
 
 1. **NUNCA publique chaves ou tokens no repositório GitHub.**
-2. O arquivo `.env` (onde as chaves reais são armazenadas) está incluído no `.gitignore` e não deve ser comitado.
+2. Armazene chaves reais somente em `.env.local`, arquivo ignorado pelo Git; nunca versione arquivos com credenciais.
 3. Utilize apenas o `.env.example` como guia para as variáveis de ambiente necessárias.
 4. Modelos pesados (.pt, .tflite) estão restritos para otimização de banda, evite subir arquivos não controlados de LFS.
+
+## Privacidade e retenção de mídia
+
+O dashboard exige consentimento antes do processamento. O arquivo enviado, os frames extraídos e o áudio derivado são apagados ao final da análise, inclusive quando há erro. Os relatórios e registros de alerta permanecem disponíveis para a sessão; como uma transcrição pode conter conteúdo pessoal falado no arquivo, ela deve ser acessada e compartilhada somente por pessoas autorizadas.
 
 ## Como Reportar uma Vulnerabilidade
 

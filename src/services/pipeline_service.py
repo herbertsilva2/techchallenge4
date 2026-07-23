@@ -1,4 +1,5 @@
 import time
+import shutil
 from pathlib import Path
 from typing import Callable, Optional
 from datetime import datetime
@@ -39,6 +40,12 @@ class PipelineService:
                 callback(step, max(0.0, min(1.0, progress)), msg)
             except Exception as e:
                 result.messages.append(f"Callback error: {str(e)}")
+
+    @staticmethod
+    def _remove_derived_media(output_dir: Path) -> None:
+        """Remove mídias sensíveis após o processamento, preservando resultados."""
+        for directory in (output_dir / "frames", output_dir / "audio"):
+            shutil.rmtree(directory, ignore_errors=True)
 
     def execute(self, video_path: Path, progress_callback: Optional[ProgressCallback] = None, output_dir: Optional[Path] = None, input_is_audio: bool = False) -> PipelineResult:
         result = PipelineResult(messages=[], errors=[], execution_times=[])
@@ -275,5 +282,8 @@ class PipelineService:
             result.status = "failed"
             result.errors.append(str(e))
             self._safe_callback(progress_callback, ProcessingStep.FUSION, 1.0, f"Falha crítica: {str(e)}", result)
+
+        finally:
+            self._remove_derived_media(out_dir)
 
         return result

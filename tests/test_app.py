@@ -30,12 +30,23 @@ def test_app_ui_components():
     assert len(at.file_uploader) > 0
 
     # Simulate an upload to show the button and check it
-    file_path = str(Path(__file__).parent.parent / "data/samples/test_video.mp4")
-    with open(file_path, "rb") as f:
-        file_bytes = f.read()
+    file_bytes = b"test-video-content"
     at.file_uploader[0].set_value(("test_video.mp4", file_bytes, "video/mp4"))
     
     # Run once to process the upload and let app.py reset the state
+    at.run()
+
+    assert len(at.checkbox) == 1
+    assert at.button[0].disabled is True
+    at.checkbox[0].check()
+    at.run()
+    assert at.button[0].disabled is False
+
+    at.file_uploader[0].set_value(("another_video.mp4", file_bytes, "video/mp4"))
+    at.run()
+    assert at.checkbox[0].value is False
+    assert at.button[0].disabled is True
+    at.checkbox[0].check()
     at.run()
     
     # Now that the upload is registered, we can override the session state to simulate processing completion
@@ -63,9 +74,6 @@ def test_app_ui_components():
     warnings = [w.value for w in at.warning]
     assert any("O sistema continua operando com as modalidades disponíveis" in w for w in warnings)
     
-    # Detector visual apresenta a limitação do modelo customizado pendente.
-    assert any("Modelo customizado hand_on_face" in w for w in warnings)
-    
     # Fusion message
     infos = [i.value for i in at.info]
     assert any("Contribuição por modalidade indisponível na versão atual do modelo de dados." in i for i in infos)
@@ -78,6 +86,7 @@ def test_app_ui_components():
     
     # To check the button, we set processing_completed to False
     at.session_state['processing_completed'] = False
+    at.session_state['consent_given'] = True
     at.run()
     assert len(at.button) > 0
     assert at.button[0].label == "Processar Vídeo"

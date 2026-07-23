@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-from src.services.dashboard_service import DashboardService
+from src.services.dashboard_service import DashboardService, CONSENT_NOTICE
 from src.domain.processing_models import ProcessingStep
 from src.ui.components.video_player import render_video_player
 from src.ui.components.metrics_panel import render_metrics_panel
@@ -28,6 +28,8 @@ if 'uploaded_media_bytes' not in st.session_state:
     st.session_state.uploaded_media_bytes = None
 if 'uploaded_media_extension' not in st.session_state:
     st.session_state.uploaded_media_extension = None
+if 'uploaded_media_name' not in st.session_state:
+    st.session_state.uploaded_media_name = None
 if 'uploaded_media_is_audio' not in st.session_state:
     st.session_state.uploaded_media_is_audio = False
 if 'processing_completed' not in st.session_state:
@@ -42,6 +44,8 @@ if 'processing_error' not in st.session_state:
     st.session_state.processing_error = None
 if 'execution_id' not in st.session_state:
     st.session_state.execution_id = None
+if 'consent_given' not in st.session_state:
+    st.session_state.consent_given = False
 
 # Cabeçalho e Aviso Ético
 st.title("Sistema Multimodal de Apoio à Triagem")
@@ -58,8 +62,12 @@ if uploaded_file is not None:
         st.error(error_msg)
     else:
         # Se for um novo arquivo, reseta o estado
-        if st.session_state.uploaded_media_bytes != uploaded_file.getvalue():
+        if (
+            st.session_state.uploaded_media_bytes != uploaded_file.getvalue()
+            or st.session_state.uploaded_media_name != uploaded_file.name
+        ):
             st.session_state.uploaded_media_bytes = uploaded_file.getvalue()
+            st.session_state.uploaded_media_name = uploaded_file.name
             import pathlib
             st.session_state.uploaded_media_extension = pathlib.Path(uploaded_file.name).suffix
             st.session_state.uploaded_media_is_audio = st.session_state.uploaded_media_extension.lower() in {'.wav', '.mp3', '.m4a', '.ogg'}
@@ -69,15 +77,22 @@ if uploaded_file is not None:
             st.session_state.report_markdown = None
             st.session_state.processing_error = None
             st.session_state.execution_id = str(uuid.uuid4())
+            st.session_state.consent_given = False
 
         if st.session_state.uploaded_media_is_audio:
             st.audio(st.session_state.uploaded_media_bytes)
         else:
             render_video_player(st.session_state.uploaded_media_bytes, st.session_state.uploaded_media_extension)
 
+        st.info(CONSENT_NOTICE)
+        consent_given = st.checkbox(
+            "Li o aviso e concordo com o processamento temporário deste arquivo.",
+            key="consent_given",
+        )
+
         if not st.session_state.processing_completed and not st.session_state.processing_error:
             action_label = "Processar Áudio" if st.session_state.uploaded_media_is_audio else "Processar Vídeo"
-            if st.button(action_label):
+            if st.button(action_label, disabled=not consent_given):
                 progress_bar = st.progress(0.0)
                 status_text = st.empty()
 

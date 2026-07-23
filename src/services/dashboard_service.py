@@ -13,6 +13,14 @@ ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv'}
 ALLOWED_AUDIO_EXTENSIONS = {'.wav', '.mp3', '.m4a', '.ogg'}
 ALLOWED_EXTENSIONS = ALLOWED_VIDEO_EXTENSIONS | ALLOWED_AUDIO_EXTENSIONS
 
+CONSENT_NOTICE = (
+    "Confirmo que tenho autorização para enviar este arquivo. O vídeo ou áudio "
+    "original, bem como os frames e o áudio derivados, são usados somente durante "
+    "esta análise e apagados automaticamente ao término. O sistema não solicita nem "
+    "apresenta campos de identificação pessoal. A transcrição pode reproduzir conteúdo "
+    "pessoal presente no arquivo e não deve ser compartilhada indevidamente."
+)
+
 class DashboardService:
     def __init__(self):
         self.pipeline_service = PipelineService()

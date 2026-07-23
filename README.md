@@ -121,6 +121,10 @@ streamlit run app.py
 
 > **Configuração local obrigatória:** antes de executar, crie o arquivo `.env.local` na raiz do projeto. Ele guarda as credenciais locais (Azure e SMTP) e não é versionado. Use `.env.example` como referência; sem as credenciais SMTP, os alertas serão registrados em modo simulado.
 
+### Privacidade do upload
+
+Antes de processar um arquivo, o dashboard exige a confirmação de que o usuário tem autorização para enviá-lo. O arquivo original, os frames extraídos e o áudio derivado são usados apenas durante a análise e apagados automaticamente, inclusive quando o processamento falha. Relatórios e alertas são preservados para download e rastreio da sessão. O sistema não solicita campos identificadores, mas a transcrição pode reproduzir conteúdo pessoal presente no próprio arquivo; não a compartilhe indevidamente.
+
 ### Executar via CLI
 ```bash
 python main.py data/samples/test_video.mp4
