@@ -10,13 +10,25 @@ Este projeto consiste em uma plataforma de inteligência artificial de triagem e
 
 ---
 
+### Link do repositório público
+
+https://github.com/herbertsilva2/techchallenge4
+
+
+https://youtu.be/js84kpQggSU
+
+### Link para o vídeo de apresentação no YouTube
+
+https://youtu.be/js84kpQggSU
+
+
 ## Funcionalidades
 
 - ✔ **Upload de vídeo**: Interface limpa e minimalista via Streamlit.
-- ✔ **Extração de áudio e frames**: Processamento assíncrono para separar metadados.
+- ✔ **Extração de áudio e frames**: Processamento síncrono para separar metadados.
 - ✔ **Detecção facial**: Rastreamento de landmarks via MediaPipe.
 - ✔ **Transcrição**: Consumo da API Azure Cognitive Speech.
-- ✔ **Análise textual**: Processamento de palavras-chave, polaridade e sentimento via NLTK/TextBlob.
+- ✔ **Análise textual**: Processamento de palavras-chave, polaridade e sentimento.
 - ✔ **YOLO**: Detecção customizada de objetos (ex: mãos no rosto) e posturas defensivas.
 - ✔ **Fusão multimodal (Fusion Engine)**: Correlação de dados de áudio, texto e visão para definir um Score final de risco.
 - ✔ **Dashboard Streamlit**: Visualização em tempo real das etapas.
@@ -125,10 +137,12 @@ streamlit run app.py
 
 Antes de processar um arquivo, o dashboard exige a confirmação de que o usuário tem autorização para enviá-lo. O arquivo original, os frames extraídos e o áudio derivado são usados apenas durante a análise e apagados automaticamente, inclusive quando o processamento falha. Relatórios e alertas são preservados para download e rastreio da sessão. O sistema não solicita campos identificadores, mas a transcrição pode reproduzir conteúdo pessoal presente no próprio arquivo; não a compartilhe indevidamente.
 
-### Executar via CLI
-```bash
-python main.py data/samples/test_video.mp4
-```
+### Vídeo e áudio para demonstração
+
+A equipe deixou anexado um vídeo e um áudio feito por integrante deste grupo, com a devida autorização e consentimento do integrante para a demonstração.
+
+assets/video_demonstracao.mp4
+assets/audio_demonstracao.mp4
 
 ---
 
@@ -195,13 +209,6 @@ O detector usa o limite geral de confiança `0,25`, mas aceita candidatos `sharp
 
 ---
 
-## Evidências e Telas
-
-![Dashboard Screenshot](https://via.placeholder.com/800x400.png?text=Dashboard+Interface+-+Upload+and+Processing)
-*(Placeholder: insira aqui os prints do seu dashboard estilo Apple).*
-
----
-
 ## Roadmap
 
 - [x] Concepção da Arquitetura Core e Modelagem de Domínio
@@ -209,9 +216,7 @@ O detector usa o limite geral de confiança `0,25`, mas aceita candidatos `sharp
 - [x] Integração de Nuvem (Azure Speech)
 - [x] Construção do Dashboard Interativo MVP
 - [x] Profissionalização Open-Source (Actions, PR Templates, Tests)
-- [ ] Treinamento completo do YOLOv8 customizado para classes de saúde
-- [ ] Deploy serverless / conteinerizado (Docker)
-- [ ] Construção de uma REST API (FastAPI) para processamento Headless
+- [x] Treinamento completo do YOLOv8 customizado para classes de saúde
 
 ---
 
