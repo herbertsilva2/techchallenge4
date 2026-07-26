@@ -80,7 +80,8 @@ graph TD;
 ```
 .
 ├── .github/          # Workflows do Github Actions e Templates
-├── data/             # Datasets YOLO e vídeos de amostra
+├── data/             # Dataset e rótulos do YOLO
+├── assets/           # Vídeo e áudio de demonstração
 ├── docs/             # Documentação técnica e da API
 ├── models/           # Pesos salvos (YOLO, MediaPipe)
 ├── outputs/          # Diretório onde relatórios e extrações são salvos
