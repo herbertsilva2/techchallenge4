@@ -16,9 +16,4 @@ Este é o mapa do produto (Roadmap) do Tech Challenge Fase 4.
 - [x] Motor de fusão de contexto
 
 ## Fase 4: Especialização AI (Futuro)
-- [ ] Treinar YOLO customizado (`best.pt`) no Google Colab
-- [ ] Incorporação de LLM local via Ollama para resumir laudos
-
-## Fase 5: Nuvem (Futuro)
-- [ ] Dockerização dos serviços
-- [ ] Deploy na AWS (EC2/ECS) ou Azure Web Apps
+- [x] Treinar YOLO customizado (`best.pt`) no Google Colab

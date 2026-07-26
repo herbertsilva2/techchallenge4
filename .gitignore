@@ -15,14 +15,6 @@ venv.bak/
 
 # Outputs and Media (Ignorados por Segurança/Tamanho)
 outputs/
-*.mp4
-*.avi
-*.mkv
-*.wav
-*.mp3
-*.jpg
-*.jpeg
-*.png
 
 # Models
 # models/ (comentado temporariamente)

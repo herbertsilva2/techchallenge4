@@ -58,4 +58,4 @@ As quatro coordenadas são normalizadas entre 0 e 1. Não rotule rosto, braço, 
 - Não há vazamento de sessões entre splits.
 - O validador não aponta erros críticos.
 - Há exemplos negativos e variação visual suficiente.
-- As métricas de validação e teste serão registradas junto à versão do modelo e à data de treinamento.
+- As métricas de validação foram registradas junto aos artefatos do treinamento; avaliações futuras devem incluir métricas por classe e teste independente.
