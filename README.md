@@ -138,8 +138,8 @@ Antes de processar um arquivo, o dashboard exige a confirmação de que o usuár
 
 A equipe deixou anexado um vídeo e um áudio feito por integrante deste grupo, com a devida autorização e consentimento do integrante para a demonstração.
 
-assets/video_demonstracao_v1.mp4
-assets/audio_demonstracao_v1.m4a
+- assets/video_demonstracao_v1.mp4
+- assets/audio_demonstracao_v1.m4a
 
 ---
 
