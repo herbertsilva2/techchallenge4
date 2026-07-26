@@ -143,7 +143,7 @@ A equipe deixou anexado um vídeo e um áudio feito por integrante deste grupo, 
 
 ---
 
-## Treinamento Rápido do YOLO Customizado
+## Treinamento Rápido do YOLO Customizado (OPCIONAL - MODELO TREINADO PREVIAMENTE PELA EQUIPE)
 
 O dataset customizado usa as classes `hand_on_face` e `sharp_object`, configuradas em `data/yolo_dataset/dataset.yaml`.
 
