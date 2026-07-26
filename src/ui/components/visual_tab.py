@@ -10,23 +10,22 @@ def render_visual_tab(report_data: Dict[str, Any]):
     
     if video_status.get('status') == 'completed' or video_status.get('status') == 'partial':
         st.success(f"Status do Processamento de Vídeo: {video_status.get('status').upper()}")
-        details = video_status.get('details', {})
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Frames Analisados", details.get('frames_analyzed', 0))
+            st.metric("Frames Analisados", video_status.get('frames_analyzed', 0))
         with col2:
-            st.metric("Faces Detectadas", details.get('faces_detected', 0))
+            st.metric("Faces Detectadas", video_status.get('faces_detected', 0))
         with col3:
-            st.metric("Objetos Detectados", details.get('objects_detected', 0))
+            st.metric("Objetos Detectados", video_status.get('objects_detected', 0))
 
-        candidate_frames = details.get('sharp_object_candidate_frames', 0)
+        candidate_frames = video_status.get('sharp_object_candidate_frames', 0)
         if candidate_frames:
             st.info(
                 "Objeto cortante: "
-                f"{details.get('confirmed_sharp_object_frames', 0)} frame(s) confirmado(s) "
+                f"{video_status.get('confirmed_sharp_object_frames', 0)} frame(s) confirmado(s) "
                 f"de {candidate_frames} candidato(s); maior confiança: "
-                f"{details.get('max_sharp_object_confidence', 0.0):.2f}. "
+                f"{video_status.get('max_sharp_object_confidence', 0.0):.2f}. "
                 "Sinal de apoio à triagem, sujeito a revisão humana."
             )
             
@@ -40,8 +39,7 @@ def render_visual_tab(report_data: Dict[str, Any]):
 
     st.subheader("Detector visual especializado")
     st.write(f"Status: {yolo_status.get('status', 'N/A')}")
-    detector_details = yolo_status.get('details', {})
-    if detector_details.get('model_mode') == 'pretrained_gesture':
+    if yolo_status.get('model_mode') == 'pretrained_gesture':
         st.info("MediaPipe Hands + Face Mesh detecta proximidade persistente entre mão e rosto.")
         st.warning("O modelo YOLOv8 customizado ainda não foi treinado; este sinal exige revisão humana.")
     elif yolo_status.get('status') == 'partial' or yolo_status.get('reason'):

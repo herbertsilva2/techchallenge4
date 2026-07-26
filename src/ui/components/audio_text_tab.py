@@ -23,8 +23,10 @@ def render_audio_text_tab(report_data: Dict[str, Any]):
             st.warning("Azure Speech não executado por ausência de credenciais.")
         if transcription_status.get('reason'):
             st.info(transcription_status.get('reason'))
-        if transcription_status.get('details'):
-            st.json(transcription_status.get('details'))
+        
+        transcription_details = {k: v for k, v in transcription_status.items() if k not in ('status', 'reason')}
+        if transcription_details:
+            st.json(transcription_details)
             
         if report_data.get('transcript'):
             st.markdown("---")
@@ -59,5 +61,7 @@ def render_audio_text_tab(report_data: Dict[str, Any]):
         st.write(f"Status: {text_status.get('status', 'N/A')}")
         if text_status.get('reason'):
             st.info(text_status.get('reason'))
-        if text_status.get('details'):
-            st.json(text_status.get('details'))
+            
+        text_details = {k: v for k, v in text_status.items() if k not in ('status', 'reason')}
+        if text_details:
+            st.json(text_details)
