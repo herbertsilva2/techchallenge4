@@ -122,9 +122,7 @@ pip install -r requirements.txt
 
 ## Execução
 
-O projeto conta com dois formatos de uso.
-
-### Executar como Dashboard (Recomendado)
+### Executar como Dashboard
 ```bash
 streamlit run app.py
 ```
