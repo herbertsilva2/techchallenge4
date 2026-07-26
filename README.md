@@ -14,7 +14,7 @@ Este projeto consiste em uma plataforma de inteligência artificial de triagem e
 
 - https://github.com/herbertsilva2/techchallenge4
 
-- Por favor, utiliza a branch **main** para a validação desta entrega.
+- Por favor, utilize a branch **main** para a validação desta entrega.
 
 
 ### Link para o vídeo de apresentação no YouTube
