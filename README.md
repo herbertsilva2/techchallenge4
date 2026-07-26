@@ -15,8 +15,6 @@ Este projeto consiste em uma plataforma de inteligência artificial de triagem e
 https://github.com/herbertsilva2/techchallenge4
 
 
-https://youtu.be/js84kpQggSU
-
 ### Link para o vídeo de apresentação no YouTube
 
 https://youtu.be/js84kpQggSU
@@ -70,7 +68,7 @@ graph TD;
 - **Python** 3.11+
 - **OpenCV** & **MoviePy**: Extração e manipulação multimidia.
 - **MediaPipe**: Análise facial em tempo real.
-- **YOLOv8 (Ultralytics)**: Object Detection de alta precisão.
+- **YOLOv8 (Ultralytics)**: detecção experimental de objetos e comportamentos visuais customizados.
 - **Azure Cognitive Speech**: Speech-to-Text de ponta.
 - **Streamlit**: Criação da interface interativa e minimalista.
 - **PyTest**: Garantia de qualidade via TDD.
@@ -141,8 +139,8 @@ Antes de processar um arquivo, o dashboard exige a confirmação de que o usuár
 
 A equipe deixou anexado um vídeo e um áudio feito por integrante deste grupo, com a devida autorização e consentimento do integrante para a demonstração.
 
-assets/video_demonstracao.mp4
-assets/audio_demonstracao.mp4
+assets/video_demonstracao_v1.mp4
+assets/audio_demonstracao_v1.m4a
 
 ---
 
@@ -216,14 +214,14 @@ O detector usa o limite geral de confiança `0,25`, mas aceita candidatos `sharp
 - [x] Integração de Nuvem (Azure Speech)
 - [x] Construção do Dashboard Interativo MVP
 - [x] Profissionalização Open-Source (Actions, PR Templates, Tests)
-- [x] Treinamento completo do YOLOv8 customizado para classes de saúde
+- [x] Treinamento do YOLOv8 customizado para classes de saúde
 
 ---
 
 ## Limitações
 
 - A análise de sentimentos e a inferência baseada em texto estão ajustadas primariamente para o idioma `pt-BR`.
-- Modelos customizados YOLO (`best.pt`) requerem hardware acelerado (GPU) para treinamento, e este repositório possui apenas o scaffold.
+- O repositório inclui um modelo YOLOv8 customizado treinado para as classes hand_on_face e sharp_object. O modelo possui caráter experimental e métricas ainda insuficientes para uso clínico ou operacional, devendo suas detecções ser submetidas à revisão humana.
 
 ## Dataset e treinamento YOLO
 
@@ -235,8 +233,3 @@ python scripts/train_yolo.py --device 0
 ```
 
 O script copia o melhor peso treinado para `models/yolo/best.pt`, caminho carregado automaticamente pelo pipeline. Em computadores sem GPU, use `--device cpu` para um experimento menor; para a entrega final, registre as métricas de validação e teste geradas pelo Ultralytics.
-
----
-
-## Próximos Passos
-As prioridades para as próximas atualizações menores envolvem o **Treinamento YOLO** em instâncias na nuvem, criação de **Dockerfiles** padronizados para isolamento completo e implementação de uma camada de **API REST** para facilitar integrações b2b.
